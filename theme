@@ -17,20 +17,20 @@ statusbar()
 wallpaper()
 {
     case "$THEME" in
-        light) feh --bg-fill ~/Pictures/LightWallpaper ;;
-        dark)  feh --bg-fill ~/Pictures/DarkWallpaper  ;;
+        light) feh --bg-fill ~/pics/LightWallpaper ;;
+        dark)  feh --bg-fill ~/pics/DarkWallpaper  ;;
     esac
 }
 
 term()
 {
-    BINDIR="$HOME/bin" make install -C "$HOME/Code/UI/st/$THEME"
+    BINDIR="$HOME/bin" make install -C "$HOME/src/repos/UI/st/$THEME"
 }
 
 notifications()
 {
     rm ~/.config/dunst/dunstrc
-    link "$HOME/Code/UI/dunst/themes/dunstrc_$THEME" ~/.config/dunst/dunstrc
+    link "$HOME/src/repos/UI/dunst/themes/dunstrc_$THEME" ~/.config/dunst/dunstrc
     killall dunst
     dunst &
 }
