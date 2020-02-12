@@ -1,0 +1,37 @@
+#!/bin/sh
+
+[ "$*" = "" ] && echo "Usage: $0 [+/-]N%" && exit
+
+setvol()
+{
+	amixer sset Master "$*"
+}
+
+setvol "$@"
+vol=$(amixer get Master | grep % | tr '[' ' ' | tr ']' ' ' | tr '%' ' ' | awk '{ print $5 }')
+vol=$(echo "$vol" | tr '\n' ' ' | awk '{ print $1 }')
+num=$(echo "$vol" | tr -d '%')
+bar=$(seq -s "─" "$((num/3))" | tr -d '0-9')
+mute=$(amixer get 'Master' | grep % | tr '[' ' ' | tr ']' ' ' | awk '{ print $6; }')
+mute=$(echo "$mute" | uniq)
+
+icon=audio-volume-muted-blocking
+urgency=normal
+if [ "$mute" = "off" ]; then
+    icon=volume-level-muted
+elif [ "$num" -lt "25" ]; then
+    icon=volume-level-low
+    urgency=low
+elif [ "$num" -lt "50" ]; then
+    icon=volume-level-medium
+    urgency=normal
+else
+    icon=volume-level-high
+    urgency=critical
+fi
+
+if command -v dunstify > /dev/null 2> /dev/null; then
+    dunstify -u "$urgency" -i "$icon" -r 1 -- "$bar"
+else
+    notify-send -u "$urgency" -i "$icon" "Volume" -h "int:value:$vol"
+fi

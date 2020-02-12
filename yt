@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [ "$DISPLAY" ]; then
+    mpv --ytdl-format 'bestvideo[height<=?1080]+bestaudio/best' --really-quiet --force-window=immediate --autofit=900 "$*" &
+else
+    mpv --no-video "$*" &
+fi

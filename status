@@ -1,0 +1,144 @@
+#!/bin/sh
+
+PID=$$
+
+# dimens() - Print the dimensions of the screen, separated by a space.
+
+dimens() {
+ xrandr | awk '/*/ { sub(/x/, " "); print $1 " " $2 }'
+}
+
+# setdimens() - Get the screen dimensions.
+#
+# Sets the global variables WIDTH and HEIGHT to their respective values.
+
+setdimens() {
+    dimens > /tmp/dimens
+    read -r WIDTH HEIGHT < /tmp/dimens
+    rm /tmp/dimens
+}
+
+setdimens
+
+# has_compositor() - Is a compositor running?
+
+has_compositor() {
+    pgrep -x compton > /dev/null 2> /dev/null
+}
+
+# Colours/fonts.
+
+THEME=$*
+
+MENU_FONT="${MENU_FONT:-Charter:size=10}"
+MENU_OPACITY="${MENU_OPACITY:-00}"
+
+setcolors() {
+    if [ "$THEME" = light ]; then
+        MENU_BG="${MENU_BG:-e6e6e6}"
+        MENU_FG="${MENU_FG:-191919}"
+    else
+        MENU_BG="${MENU_BG:-191919}"
+        MENU_FG="${MENU_FG:-e6e6e6}"
+    fi
+
+    if has_compositor; then
+        MENU_BG="${MENU_OPACITY}$MENU_BG"
+    fi
+}
+
+setcolors
+
+# bar(x, y, w, h, persist) - Display text on the screen at the given coordinates/dimensions.
+#
+# persist   If set to "-p", this argument will keep the text displayed until the program is killed.
+
+bar() {
+    x=$1
+    y=$2
+    w=$3
+    h=$4
+    shift 4
+
+    lemonbar "$@" -g "${w}x${h}+${x}+${y}" -d -f "$MENU_FONT" "#$MENU_BG" -F "#$MENU_FG"
+}
+
+# running() - Is the status script still running?
+
+running() {
+    ps $PID > /dev/null 2> /dev/null && pgrep -x sowm > /dev/null 2> /dev/null
+}
+
+# center(txt) - Center text.
+#
+# Prints the text along with the lemonbar format command
+# for centered text (%{c})
+
+center() {
+    echo "%{c}$*" 2> /dev/null
+}
+
+# status(cmd, d, y, x, w, h) - Display the output of a command on the screen.
+#
+# cmd The command to run
+# d   The delay between commands. If negative, the command is only run once and displayed indefinitely.
+# y   The Y position of the status bar. Can be a number (relative to center of screen), [t]op, [m]iddle, or [b]ottom.
+# x   The X position of the status bar. Can be a number (relative to center of screen), [l]eft, [m]iddle, or [r]ight
+
+status() {
+    cmd=$1
+    d=$2
+    y=${3:-0}
+    x=${4:-0}
+    w=${5:-150}
+    h=${6:-20}
+
+    # Shortcuts for commonly-needed positions/coordinates relative
+    # to the middle of the screen.
+
+    case $x in
+        m*) x=$(((WIDTH / 2) - (w / 2))) ;;
+        r*)  x=$((WIDTH - w)) ;;
+        l*) x=0 ;;
+        *) x=$(((WIDTH / 2) + x - (w / 2))) ;;
+    esac
+
+    case $y in
+        m*) y=$(((HEIGHT / 2) - (h / 2))) ;;
+        b*) y=$((HEIGHT - h)) ;;
+        t*) y=0 ;;
+        *) y=$(((HEIGHT / 2) + x - (h / 2))) ;;
+    esac
+
+    if [ "$d" -ge 0 ]; then
+        while running; do
+            center "$($cmd)"
+            sleep "$d"
+        done | bar $x $y "$w" "$h"
+    else
+        center "$($cmd)" | bar $x $y "$w" "$h" -p
+    fi
+}
+
+# Various status commands.
+
+_time() { date +'%T'; }
+_date() {
+    date +'%D'
+    # Automatically switch to dark theme by 4pm
+    [ "$(date +%H)" -ge 16 ] && [ "$(theme)" != dark ] && theme dark &
+}
+vol() { pactl list sinks | awk '$1=="Volume:" {print $5}'; }
+bat() { acpi | tr ' ' '\n' | grep % | tr -d ','; }
+
+# Top
+
+status vol      0      t  l &
+status whoami  -1      t  m &
+status bat      1      t  r &
+
+# Bottom
+
+status _date    60     b  l &
+status mori     1      b  m &
+status _time    1      b  r

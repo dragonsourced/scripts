@@ -1,0 +1,53 @@
+#!/bin/sh
+
+ADDR='34:43:16:04:41:63'
+
+PROMPT="Bluetooth headphones [$ADDR]"
+
+OPTON="Connect"
+OPTOFF="Disconnect"
+OPTEXIT="[ Cancel ]"
+
+options()
+{
+    echo "$OPTON"
+    echo "$OPTOFF"
+    echo "$OPTEXIT"
+}
+
+on()
+{
+    echo "power on" | bluetoothctl > /dev/null
+    sleep 1
+    echo "connect ${ADDR}" | bluetoothctl > /dev/null
+}
+
+off()
+{
+    echo "power off" | bluetoothctl > /dev/null
+}
+
+if [ "$*" ]; then
+    case $* in
+        on|enable)
+            on ;;
+        off|disable)
+            off ;;
+        *)
+            echo "Usage: $0"
+            echo "       $0 enable/disable"
+            ;;
+    esac
+else
+    while true; do
+        opt=$(options | menu -i -p "$PROMPT")
+        echo "$opt"
+        if [ "$opt" = "$OPTON" ]; then
+            on &
+        elif [ "$opt" = "$OPTOFF" ]; then
+            off &
+        else
+            exit
+        fi
+    done
+fi

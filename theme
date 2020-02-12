@@ -1,0 +1,76 @@
+#!/bin/sh
+
+THEMEFILE=/tmp/theme
+
+themes() {
+    echo light
+    echo dark
+}
+
+statusbar()
+{
+    killall status
+    killall lemonbar
+    status "$THEME" &
+}
+
+wallpaper()
+{
+    case "$THEME" in
+        light) feh --bg-fill ~/Pictures/LightWallpaper ;;
+        dark)  feh --bg-fill ~/Pictures/DarkWallpaper  ;;
+    esac
+}
+
+term()
+{
+    BINDIR="$HOME/bin" make install -C "$HOME/Code/UI/st/$THEME"
+}
+
+notifications()
+{
+    rm ~/.config/dunst/dunstrc
+    link "$HOME/Code/UI/dunst/themes/dunstrc_$THEME" ~/.config/dunst/dunstrc
+    killall dunst
+    dunst &
+}
+
+rofi()
+{
+    sed -i "s/rofi\\.theme:.*$/rofi.theme:         $THEME.rasi/" ~/.config/rofi/config
+}
+
+spotify()
+{
+    if [ "$THEME" = light ]; then
+        spicetify config current_theme DefaultLight
+        spicetify update
+    else
+        spicetify config current_theme DefaultDark
+        spicetify update
+    fi
+}
+
+switchto() {
+    export THEME="$*"
+    echo "$THEME" > "$THEMEFILE"
+    term
+    rofi
+    wallpaper
+    statusbar
+    notifications
+    spotify
+}
+
+case $* in
+    light) switchto light ;;
+    dark)  switchto dark  ;;
+    menu)  $0 "$(themes | menu)" ;;
+    list)  themes ;;
+    "")    cat "$THEMEFILE" ;;
+    *)
+        echo "Usage: $0 <theme>"
+        echo "       $0 list"
+        echo "       $0 menu"
+        ;;
+esac

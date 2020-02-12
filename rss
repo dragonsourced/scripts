@@ -1,0 +1,86 @@
+#!/bin/sh
+
+feed() {
+    sort -r ~/.sfeed/feeds/* 2> /dev/null | head -50
+}
+
+new() {
+    feed | sfeed_fmt new author title
+}
+
+escape() {
+    sed -e 's/\[/\\[/g' -e 's/\]/\\]/g' -e 's|/|\/|g'
+}
+
+list() {
+    feed | sfeed_fmt author title > /tmp/rss
+    new | while read -r line; do
+    sed -i "s/^$(echo "$line" | escape)/(new) $(echo "$line" | escape)/g" /tmp/rss
+    done
+    cat /tmp/rss
+    rm /tmp/rss
+}
+
+linenum() {
+    list | grep -n "$(echo "$*" | escape)" | head -1 | sed 's/:.*$//'
+}
+
+line() {
+    n=$1
+    feed | head -$((n)) | tail -1
+}
+
+sfmt() {
+    line="$1"
+    shift
+    # printf to avoid expanding newlines just yet.
+    printf '%s\n' "$line" | sfeed_fmt "$@" 
+}
+
+content() {
+    sfmt "$*" content | sed -e 's/\\n/\n/g' -e 's/</&lt;/g' -e 's/>/&gt;/g' | head -15
+}
+
+OPT_YT="Open in mpv"
+OPT_WWW="Open in browser"
+OPT_CP="Copy link"
+OPT_X="[ Cancel ] "
+
+openopts() {
+    link="$*"
+
+    if echo "$link" | grep -q 'youtube.com'; then
+        echo "$OPT_YT"
+        echo "$OPT_WWW"
+    else
+        echo "$OPT_WWW"
+    fi
+    echo "$OPT_CP"
+    echo "$OPT_X"
+}
+
+opts() {
+    opt="$(list | menu -i -p RSS)"
+    [ "$opt" ] || return
+    num="$(linenum "$opt")"
+    line="$(line "$num")"
+
+    link="$(sfmt "$line" link)"
+    author="$(sfmt "$line" author)"
+    content="$(content "$line")"
+    echo "$link"
+    opt="$(openopts "$link" | menu -i -mesg "$content" -p "$author")"
+
+    if [ "$opt" ]; then
+        case "$opt" in
+            "$OPT_YT") yt "$link" ;;
+            "$OPT_WWW") sensible-browser "$link" ;;
+            "$OPT_CP") echo "$link" | xsel -b ;;
+            *) opts ;;
+        esac
+    else
+        opts
+    fi
+}
+
+opts
