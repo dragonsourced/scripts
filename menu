@@ -4,5 +4,4 @@ if [ "$DISPLAY" ]; then
     rofi -dmenu "$@"
 else
     fzf --layout=reverse
-    clear
 fi
