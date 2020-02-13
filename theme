@@ -71,8 +71,8 @@ gtk() {
 switchto() {
     export THEME="$*"
     echo "$THEME" > "$THEMEFILE"
+    term &
     gtk
-    term
     rofi
     wallpaper
     statusbar
