@@ -1,8 +1,8 @@
 #!/bin/sh
 
 if [ "$DISPLAY" ]; then
-    # If vertical layout is desired, add -l "${MENU_LINES:-37}" 
     rofi -dmenu "$@"
 else
     fzf --layout=reverse
+    clear
 fi
