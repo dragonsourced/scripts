@@ -128,7 +128,17 @@ _date() {
     # Automatically switch to dark theme by 4pm
     [ "$(date +%H)" -ge 16 ] && [ "$(theme)" != dark ] && theme dark &
 }
-vol() { pactl list sinks | awk '$1=="Volume:" {print $5}'; }
+
+# TODO: integrate with headphones
+vol() {
+    if amixer get Headphone > /dev/null 2> /dev/null; then
+        get=Headphone
+    else
+        get=Master
+    fi
+
+    amixer get $get | tr ' ' '\n' | grep % | tr -d '[]'
+}
 bat() { acpi | tr ' ' '\n' | grep % | tr -d ','; }
 
 # Top
