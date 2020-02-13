@@ -16,13 +16,12 @@ else
     theme light &
 fi
 
-xsettingsd() {
-    sleep 5
-    xfsettings
-}
+sowm &
+sowm=$!
 
-xsettingsd &
-sowm
+xfsettingsd
+
+wait $sowm
 
 killall redshift
 killall bar.sh
