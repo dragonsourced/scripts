@@ -24,7 +24,13 @@ wallpaper()
 
 term()
 {
-    BINDIR="$HOME/bin" make install -C "$HOME/src/repos/UI/st/$THEME"
+    [ "$THEME" = light ] && cflags="-DLIGHT_THEME=1"
+    export BINDIR="$HOME/bin"
+    (
+        cd "$HOME/src/ui/st"
+        make clean
+        make install CFLAGS="$cflags"
+    )
 }
 
 notifications()
