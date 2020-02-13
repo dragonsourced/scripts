@@ -16,7 +16,12 @@ else
     theme light &
 fi
 
-xfsettings
+xsettingsd() {
+    sleep 5
+    xfsettings
+}
+
+xsettingsd &
 sowm
 
 killall redshift
