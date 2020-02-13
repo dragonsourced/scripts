@@ -6,9 +6,6 @@ xrandr --output HDMI-1 --off
 # shellcheck source=/home/Gordon/.fehbg
 [ -f ~/.fehbg ] && . ~/.fehbg
 
-# Start the xfsettings daemon, but only if it's not already running.
-pgrep -x xfsettings > /dev/null 2> /dev/null || xfsettings
-
 compton -CczfbD1 -o 0.1
 redshift &
 dunst &
@@ -19,6 +16,7 @@ else
     theme light &
 fi
 
+xfsettings
 sowm
 
 killall redshift
