@@ -17,14 +17,14 @@ options()
 
 on()
 {
-    echo "power on" | bluetoothctl > /dev/null
+    echo "power on" | bluetoothctl
     sleep 1
-    echo "connect ${ADDR}" | bluetoothctl > /dev/null
+    echo "connect ${ADDR}" | bluetoothctl
 }
 
 off()
 {
-    echo "power off" | bluetoothctl > /dev/null
+    echo "power off" | bluetoothctl
 }
 
 if [ "$*" ]; then
