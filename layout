@@ -1,0 +1,35 @@
+#!/bin/sh
+
+layout=$(setxkbmap -query | grep layout | awk '{ print $2 }')
+
+setlayout() {
+	setxkbmap -layout "$@"
+}
+
+n_us() { setlayout ca; }
+n_ca() { setlayout ru; }
+n_ru() { setlayout no; }
+n_no() { setlayout us; }
+
+b_us() { setlayout no; }
+b_ca() { setlayout us; }
+b_ru() { setlayout ca; }
+b_no() { setlayout ru; }
+
+next() { "n_$layout"; }
+prev() { "b_$layout"; }
+
+# Only one layout at a time, please.
+if echo "$layout" | grep -q ,; then
+    layout="$(echo "$layout" | sed 's/,.*$//')"
+fi
+
+case "$*" in
+    next) next ;;
+    prev) prev ;;
+    "") echo "$layout" ;;
+    *)
+        echo "Usage: layout"
+        echo "       layout [next/prev]"
+        ;;
+esac
