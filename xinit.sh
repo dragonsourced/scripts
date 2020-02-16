@@ -8,13 +8,18 @@ xrandr --output HDMI-1 --off
 
 compton -CczfbD1 -o 0.1
 
-if [ "$(date +%H)" -ge 16 ]; then
-    theme dark
-else
-    theme light
-fi
+theme=$(command -v theme)
+
+theme() {
+    if [ "$(date +%H)" -ge 16 ]; then
+        $theme dark
+    else
+        $theme light
+    fi
+}
 
 # For theme script.
 xfsettingsd
 
+theme &
 exec wm
