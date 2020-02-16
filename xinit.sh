@@ -17,4 +17,4 @@ fi
 # For theme script.
 xfsettingsd
 
-exec sowm
+exec wm
