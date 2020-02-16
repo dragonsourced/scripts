@@ -1,11 +1,12 @@
 #!/bin/sh
 
 PID=$$
+WM=sowm
 
 # dimens() - Print the dimensions of the screen, separated by a space.
 
 dimens() {
- xrandr | awk '/*/ { sub(/x/, " "); print $1 " " $2 }'
+    xrandr | awk '/*/ { sub(/x/, " "); print $1 " " $2 }'
 }
 
 # setdimens() - Get the screen dimensions.
@@ -66,7 +67,7 @@ bar() {
 # running() - Is the status script still running?
 
 running() {
-    ps $PID > /dev/null 2> /dev/null && pgrep -x sowm > /dev/null 2> /dev/null
+    ps $PID > /dev/null 2> /dev/null && pgrep -x $WM > /dev/null 2> /dev/null
 }
 
 # center(txt) - Center text.
