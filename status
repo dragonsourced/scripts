@@ -124,6 +124,8 @@ status() {
 # Various status commands.
 
 _time() { date +'%T'; }
+_date() { date +'%D'; }
+
 _layout() { layout | tr '[:lower:]' '[:upper:]'; }
 
 # TODO: integrate with headphones
@@ -136,16 +138,17 @@ vol() {
 
     amixer get $get | tr ' ' '\n' | grep % | tr -d '[]'
 }
+
 bat() { acpi | tr ' ' '\n' | grep % | tr -d ','; }
 
 # Top
 
 status vol      0      t  l &
-status whoami  -1      t  m &
+status _date    60     t  m &
 status bat      1      t  r &
 
 # Bottom
 
-status _layout  60     b  l &
+status _layout  0      b  l &
 status mori     1      b  m &
 status _time    1      b  r
