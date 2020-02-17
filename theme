@@ -32,9 +32,8 @@ term()
 
 notifications()
 {
-    rm ~/.config/dunst/dunstrc
-    link "$HOME/src/repos/UI/dunst/themes/dunstrc_$THEME" ~/.config/dunst/dunstrc
     killall dunst
+    install -D "$HOME/src/ui/dunstrc_$THEME" ~/.config/dunst/dunstrc
     dunst &
 }
 
