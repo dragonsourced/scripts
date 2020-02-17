@@ -33,7 +33,7 @@ term()
 notifications()
 {
     killall dunst
-    install -D "$HOME/src/ui/dunstrc_$THEME" ~/.config/dunst/dunstrc
+    install -D "$HOME/src/ui/dunst/$THEME" ~/.config/dunst/dunstrc
     dunst &
 }
 
