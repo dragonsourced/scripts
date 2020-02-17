@@ -16,10 +16,7 @@ statusbar()
 
 wallpaper()
 {
-    case "$THEME" in
-        light) feh --bg-fill ~/pics/LightWallpaper ;;
-        dark)  feh --bg-fill ~/pics/DarkWallpaper  ;;
-    esac
+    feh --bg-fill "$HOME/pics/wall/$THEME"
 }
 
 term()
