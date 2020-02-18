@@ -22,4 +22,6 @@ theme() {
 xfsettingsd
 
 theme &
-exec wm
+wm
+
+killall status
