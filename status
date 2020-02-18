@@ -2,7 +2,21 @@
 
 PID=$$
 
-# has_compositor() - Is a compositor running?
+# Screen dimensions.
+
+getdimens() {
+    xrandr | awk '/*/ { sub("x", " ", $1); print $1; }'
+}
+
+getdimen() {
+    getdimens | awk "{ print \$$1 }"
+}
+
+MARGIN=50
+WIDTH=$(($(getdimen 1) - (MARGIN * 2)))
+HEIGHT=15
+
+# Is a compositor running?
 
 has_compositor() {
     pgrep -x compton > /dev/null 2> /dev/null
@@ -33,7 +47,7 @@ setcolors
 
 bar() {
     [ "$1" = b ] && bottom='-b'
-    lemonbar "$@" -d -f "$MENU_FONT" "#$MENU_BG" -F "#$MENU_FG" "$bottom"
+    lemonbar "$@" -g "${WIDTH}x${HEIGHT}+${MARGIN}" -d -f "$MENU_FONT" "#$MENU_BG" -F "#$MENU_FG" "$bottom"
 }
 
 status() {
