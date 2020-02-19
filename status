@@ -26,7 +26,7 @@ has_compositor() {
 
 THEME=$*
 
-MENU_FONT="${MENU_FONT:-Charter:size=10}"
+MENU_FONT="${MENU_FONT:-Iosevka:size=10}"
 MENU_OPACITY="${MENU_OPACITY:-00}"
 
 setcolors() {
