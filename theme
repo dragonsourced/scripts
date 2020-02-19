@@ -44,19 +44,14 @@ rofi()
 
 spotify()
 {
-    if [ "$THEME" = light ]; then
-        spicetify config current_theme DefaultLight
-        spicetify update
-    else
-        spicetify config current_theme DefaultDark
-        spicetify update
-    fi
+    spicetify config current_theme "$THEME"
+    spicetify update
 }
 
 gtk() {
     export GTK_THEME="oomox-$THEME"
     export ICON_THEME="oomox-$THEME"
-    export FONT="Charter 10"
+    export FONT="Iosevka 10"
 
     # Set GTK theme via xsettings.
     xfconf-query -c xsettings -p /Net/ThemeName -s "$GTK_THEME"
