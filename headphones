@@ -8,46 +8,38 @@ OPTON="Connect"
 OPTOFF="Disconnect"
 OPTEXIT="[ Cancel ]"
 
-options()
-{
+options() {
     echo "$OPTON"
     echo "$OPTOFF"
     echo "$OPTEXIT"
 }
 
-on()
-{
+on() {
     echo "power on" | bluetoothctl
     sleep 1
     echo "connect ${ADDR}" | bluetoothctl
 }
 
-off()
-{
+off() {
     echo "power off" | bluetoothctl
 }
 
-if [ "$*" ]; then
-    case $* in
-        on|enable)
-            on ;;
-        off|disable)
-            off ;;
-        *)
-            echo "Usage: $0"
-            echo "       $0 enable/disable"
-            ;;
-    esac
-else
+loop() {
     while true; do
         opt=$(options | menu -i -p "$PROMPT")
-        echo "$opt"
-        if [ "$opt" = "$OPTON" ]; then
-            on &
-        elif [ "$opt" = "$OPTOFF" ]; then
-            off &
-        else
-            exit
-        fi
+        case "$opt" in
+            "$OPTON")  on  & ;;
+            "$OPTOFF") off & ;;
+            *) exit ;;
+        esac
     done
-fi
+}
+
+case "$*" in
+    on|y|e*)  on ;;
+    off|n|d*) off ;;
+    menu|'') loop ;;
+    *)
+        echo "Usage: $0"
+        echo "       $0 enable/disable" ;;
+esac
