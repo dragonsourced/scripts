@@ -1,6 +1,6 @@
 #!/bin/sh
 
-extract() {
+block() {
     for f in "$@"; do
         # shellcheck disable=2016
         [ -f "$f" ] && {
@@ -9,6 +9,14 @@ extract() {
             echo '```'
         }
     done
+}
+
+single() {
+    awk '/^\/\// { sub("//", "", $1); gsub("/", "#", $1); $0 = "```\n" $0 "\n```" } { print $0 }'
+}
+
+extract() {
+    block "$@" | single
 }
 
 superfluous() {
@@ -22,7 +30,7 @@ mkdocs() {
     extract "$@" > $tmpfile
     superfluous $tmpfile
     [ -f docs_template.html ] && template="--template=docs_template.html"
-    pandoc --toc -s $template $tmpfile -o docs.html
+    pandoc --toc -s $template $tmpfile | sed '/<pre><code><\/code><\/pre>/d'
     rm $tmpfile
 }
 
