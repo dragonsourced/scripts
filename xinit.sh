@@ -6,7 +6,7 @@ xrandr --output HDMI-1 --off
 # shellcheck source=/home/Gordon/.fehbg
 [ -f ~/.fehbg ] && . ~/.fehbg
 
-compton -CczfbD1 -o 0.1
+compton -czbCo0.5
 
 theme=$(command -v theme)
 
@@ -22,6 +22,6 @@ theme() {
 xfsettingsd
 
 theme &
-wm
+wm 2> ~/help
 
 killall status
