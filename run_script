@@ -1,0 +1,10 @@
+#!/bin/sh
+
+opts() {
+    echo "theme menu"
+    echo "headphones"
+    echo "rss"
+}
+
+opt=$(opts | menu -i -p 'Run a shell script')
+[ "$opt" ] && $opt
