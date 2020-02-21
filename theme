@@ -51,7 +51,7 @@ spotify()
 gtk() {
     export GTK_THEME="oomox-$THEME"
     export ICON_THEME="oomox-$THEME"
-    export FONT="Iosevka 10"
+    export FONT="Charter 10"
 
     # Set GTK theme via xsettings.
     xfconf-query -c xsettings -p /Net/ThemeName -s "$GTK_THEME"
