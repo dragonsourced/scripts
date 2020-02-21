@@ -6,7 +6,7 @@ xrandr --output HDMI-1 --off
 # shellcheck source=/home/Gordon/.fehbg
 [ -f ~/.fehbg ] && . ~/.fehbg
 
-compton -czbCo0.5
+compton -czbCo0.2
 
 theme=$(command -v theme)
 
