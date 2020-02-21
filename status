@@ -31,11 +31,11 @@ MENU_OPACITY="${MENU_OPACITY:-00}"
 
 setcolors() {
     if [ "$THEME" = light ]; then
-        MENU_BG="${MENU_BG:-e6e6e6}"
+        MENU_BG="${MENU_BG:-fafafa}"
         MENU_FG="${MENU_FG:-191919}"
     else
         MENU_BG="${MENU_BG:-191919}"
-        MENU_FG="${MENU_FG:-e6e6e6}"
+        MENU_FG="${MENU_FG:-fafafa}"
     fi
 
     if has_compositor; then
