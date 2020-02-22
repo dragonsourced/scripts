@@ -21,7 +21,9 @@ theme() {
 # For theme script.
 xfsettingsd
 
+redshift &
 theme &
 wm 2> ~/help
 
 killall status
+killall redshift
