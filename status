@@ -2,19 +2,8 @@
 
 PID=$$
 
-# Screen dimensions.
-
-getdimens() {
-    xrandr | awk '/*/ { sub("x", " ", $1); print $1; }'
-}
-
-getdimen() {
-    getdimens | awk "{ print \$$1 }"
-}
-
-MARGIN=50
-WIDTH=$(($(getdimen 1) - (MARGIN * 2)))
-HEIGHT=15
+MARGIN=15
+MARGIN=$(seq -s ' ' $MARGIN | tr -d '0-9')
 
 # Is a compositor running?
 
@@ -47,7 +36,7 @@ setcolors
 
 bar() {
     [ "$1" = b ] && bottom='-b'
-    lemonbar "$@" -g "${WIDTH}x${HEIGHT}+${MARGIN}" -d -f "$MENU_FONT" -B "#$MENU_BG" -F "#$MENU_FG" "$bottom"
+    lemonbar "$@" -d -f "$MENU_FONT" -B "#$MENU_BG" -F "#$MENU_FG" "$bottom"
 }
 
 status() {
@@ -57,7 +46,7 @@ status() {
     right=$4
     b=$5
     while ps "$PID" > /dev/null; do
-        echo "%{l}$($left)%{c}$($mid)%{r}$($right)"
+        echo "%{l}${MARGIN}$($left)%{c}$($mid)%{r}$($right)${MARGIN}"
         sleep "$delay"
     done | bar "$b"
 }
