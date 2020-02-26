@@ -23,7 +23,7 @@ xfsettingsd
 
 redshift &
 theme &
-wm 2> ~/help
+wm
 
 killall status
 killall redshift
