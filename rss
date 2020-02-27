@@ -53,12 +53,12 @@ list() {
 }
 
 linenum() {
-    list | grep -n "$(echo "$*" | escape)" | head -1 | sed 's/:.*$//'
+    list | grep -n "$(echo "$*" | escape)" | sed 1q | sed 's/:.*$//'
 }
 
 line() {
     n=$1
-    feed | head -$((n)) | tail -1
+    feed | sed $((n))q | tail -1
 }
 
 sfmt() {
@@ -69,7 +69,7 @@ sfmt() {
 }
 
 content() {
-    sfmt "$*" content | sed -e 's/\\n/\n/g' -e 's/</&lt;/g' -e 's/>/&gt;/g' | head -15
+    sfmt "$*" content | sed -e 's/\\n/\n/g' -e 's/</&lt;/g' -e 's/>/&gt;/g' | sed 15q
 }
 
 OPT_YT="Open in mpv"
