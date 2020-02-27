@@ -78,7 +78,11 @@ OPT_CP="Copy link"
 OPT_X="[ Cancel ] "
 
 is_media() {
-    echo "$*" | grep -q 'youtube.com'
+    case "$*" in
+        *youtube.com*) true ;;
+        *.mp3*|*.m4a*)   true ;;
+        *) false ;;
+    esac
 }
 
 openopts() {
@@ -96,7 +100,8 @@ opts() {
     num="$(linenum "$opt")"
     line="$(line "$num")"
 
-    link="$(sfmt "$line" link)"
+    link="$(sfmt "$line" enclosure)"
+    [ "$link" ] || link="$(sfmt "$line" link)"
     author="$(sfmt "$line" author)"
     content="$(content "$line")"
     echo "$link"
