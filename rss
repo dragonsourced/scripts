@@ -89,7 +89,13 @@ is_media() {
 openopts() {
     link="$*"
 
-    is_media "$link" && { echo "$OPT_YT"; echo "$OPT_AUD"; }
+    is_media "$link" && if [ "$DIPLAY" ]; then
+        echo "$OPT_YT"
+        echo "$OPT_AUD"
+    else
+        echo "$OPT_AUD"
+        echo "$OPT_YT"
+    fi
     echo "$OPT_WWW"
     echo "$OPT_CP"
     echo "$OPT_X"
