@@ -10,7 +10,7 @@ FEEDS=~/.sfeed/feeds
 
 selfeed() {
     # shellcheck disable=2012
-    opt=$(ls -1 | menu -i -p RSS)
+    opt=$(ls | menu -i -p RSS)
     if [ "$opt" ] && [ -d "$opt" ]; then
         FEED="$opt"
         if isfeed "$FEED"; then
