@@ -8,13 +8,11 @@ xrandr --output HDMI-1 --off
 
 compton -czbCo0.2
 
-theme=$(command -v theme)
-
-theme() {
+settheme() {
     if [ "$(date +%H)" -ge 16 ]; then
-        $theme dark
+        theme set dark
     else
-        $theme light
+        theme set light
     fi
 }
 
@@ -22,7 +20,7 @@ theme() {
 xfsettingsd
 
 redshift &
-theme &
+settheme &
 wm
 
 killall status

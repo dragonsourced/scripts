@@ -1,49 +1,52 @@
 #!/bin/sh
+#
+# Simple command to get (attributes of) the current theme.
+#
+# If you want to add a new theme, you must add a corresponding entry in
+# ~/src/ui/themes, ~/src/ui/st/themes, ~/src/ui/dunstw, ~/.config/rofi,
+# ~/.config/spicetify/Themes, and a new GTK+ theme called oomox-<theme>
+#
 
 THEMEFILE=/tmp/theme
+THEMEDIR=$HOME/src/ui/themes
 
 themes() {
-    echo light
-    echo dark
+    cd ~/src/ui/themes || exit
+    for f in *; do
+        echo "$f"
+    done
 }
 
-statusbar()
-{
+statusbar() {
     killall status
     killall lemonbar
     status "$THEME" &
 }
 
-wallpaper()
-{
+wallpaper() {
     feh --bg-fill "$HOME/pics/wall/$THEME"
 }
 
-term()
-{
-    [ "$THEME" = light ] && cflags="-DLIGHT_THEME=1"
+term() {
     export BINDIR="$HOME/bin"
     (
-        cd "$HOME/src/ui/st"
+        cd "$HOME/src/ui/st" || return
         make clean
-        make install CFLAGS="$cflags"
+        make CFLAGS="-Ithemes/$THEME" install
     )
 }
 
-notifications()
-{
+notifications() {
     killall dunst
     install -D "$HOME/src/ui/dunst/$THEME" ~/.config/dunst/dunstrc
     dunst &
 }
 
-rofi()
-{
+rofi() {
     sed -i "s/rofi\\.theme:.*$/rofi.theme:         $THEME.rasi/" ~/.config/rofi/config
 }
 
-spotify()
-{
+spotify() {
     spicetify config current_theme "$THEME"
     spicetify update
 }
@@ -71,12 +74,14 @@ switchto() {
     spotify
 }
 
-case $* in
-    light) switchto light ;;
-    dark)  switchto dark  ;;
-    menu)  $0 "$(themes | menu)" ;;
-    list)  themes ;;
+case $1 in
+    s|set) [ -f "$THEMEDIR/$2" ] && switchto "$2" ;;
+    m|menu)
+        opt=$(themes | menu)
+        [ "$opt" ] && $0 set "$opt" ;;
+    l|list) themes ;;
     "")    cat "$THEMEFILE" ;;
+    g|get) grep "^$2" "$THEMEDIR/$($0)" | awk '{ print $2 }' ;;
     *)
         echo "Usage: $0 <theme>"
         echo "       $0 list"

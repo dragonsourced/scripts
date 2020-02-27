@@ -13,26 +13,16 @@ has_compositor() {
 
 # Colours/fonts.
 
-THEME=$*
-
 MENU_FONT="${MENU_FONT:-Charter:size=10}"
 MENU_OPACITY="${MENU_OPACITY:-00}"
 
-setcolors() {
-    if [ "$THEME" = light ]; then
-        MENU_BG="${MENU_BG:-fafafa}"
-        MENU_FG="${MENU_FG:-191919}"
-    else
-        MENU_BG="${MENU_BG:-191919}"
-        MENU_FG="${MENU_FG:-fafafa}"
-    fi
+MENU_BG=$(theme get bg)
+MENU_FG=$(theme get fg)
+MENU_OPACITY=$(theme get opacity)
 
-    if has_compositor; then
-        MENU_BG="${MENU_OPACITY}$MENU_BG"
-    fi
-}
-
-setcolors
+if has_compositor; then
+    MENU_BG="${MENU_OPACITY}$MENU_BG"
+fi
 
 bar() {
     [ "$1" = b ] && bottom='-b'
