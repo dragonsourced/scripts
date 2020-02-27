@@ -1,7 +1,7 @@
 #!/bin/sh
 
 feed() {
-    sort -r ~/.sfeed/feeds/* 2> /dev/null | head -50
+    sort -r ~/.sfeed/feeds/* 2> /dev/null
 }
 
 new() {
@@ -46,15 +46,15 @@ OPT_WWW="Open in browser"
 OPT_CP="Copy link"
 OPT_X="[ Cancel ] "
 
+is_media() {
+    echo "$*" | grep -q 'youtube.com'
+}
+
 openopts() {
     link="$*"
 
-    if echo "$link" | grep -q 'youtube.com'; then
-        echo "$OPT_YT"
-        echo "$OPT_WWW"
-    else
-        echo "$OPT_WWW"
-    fi
+    is_media "$link" && echo "$OPT_YT"
+    echo "$OPT_WWW"
     echo "$OPT_CP"
     echo "$OPT_X"
 }
