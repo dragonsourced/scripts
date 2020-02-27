@@ -1,7 +1,38 @@
 #!/bin/sh
 
+isfeed() {
+    for i in "$*"/*; do
+        [ -d "$i" ] && echo yes
+    done | grep -q yes
+}
+
+FEEDS=~/.sfeed/feeds
+
+selfeed() {
+    # shellcheck disable=2012
+    opt=$(ls -1 | menu -i -p RSS)
+    if [ "$opt" ] && [ -d "$opt" ]; then
+        FEED="$opt"
+        if isfeed "$FEED"; then
+            cd "$FEED" || return
+            selfeed
+        else
+            FEED="$PWD/$FEED"
+            opts
+        fi
+    else
+        if [ "$PWD" = "$FEEDS" ]; then
+            echo "No feed selected. Goodbye!"
+            exit
+        else
+            cd ..
+            selfeed
+        fi
+    fi
+}
+
 feed() {
-    sort -r ~/.sfeed/feeds/* 2> /dev/null
+    sort -r "$FEED"/* 2> /dev/null
 }
 
 new() {
@@ -61,7 +92,7 @@ openopts() {
 
 opts() {
     opt="$(list | menu -i -p RSS)"
-    [ "$opt" ] || return
+    [ "$opt" ] || { selfeed; return; }
     num="$(linenum "$opt")"
     line="$(line "$num")"
 
@@ -83,4 +114,5 @@ opts() {
     fi
 }
 
-opts
+cd "$FEEDS" || exit
+selfeed
