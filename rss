@@ -72,6 +72,7 @@ content() {
     sfmt "$*" content | sed -e 's/\\n/\n/g' -e 's/</&lt;/g' -e 's/>/&gt;/g' | sed 15q
 }
 
+OPT_AUD="Open in mpv (audio only)"
 OPT_YT="Open in mpv"
 OPT_WWW="Open in browser"
 OPT_CP="Copy link"
@@ -88,7 +89,7 @@ is_media() {
 openopts() {
     link="$*"
 
-    is_media "$link" && echo "$OPT_YT"
+    is_media "$link" && { echo "$OPT_YT"; echo "$OPT_AUD"; }
     echo "$OPT_WWW"
     echo "$OPT_CP"
     echo "$OPT_X"
@@ -109,6 +110,7 @@ opts() {
 
     if [ "$opt" ]; then
         case "$opt" in
+            "$OPT_AUD") mpv --no-video "$link" ;;
             "$OPT_YT") yt "$link" ;;
             "$OPT_WWW") sensible-browser "$link" ;;
             "$OPT_CP") echo "$link" | xsel -b ;;
