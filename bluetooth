@@ -1,0 +1,46 @@
+#!/bin/sh
+
+devices() {
+    echo devices | bluetoothctl | grep :
+}
+
+OPT_ON="Connect"
+OPT_OFF="Disconnect"
+OPT_CANCEL="[ Cancel ]"
+
+opts() {
+    echo "$OPT_ON"
+    echo "$OPT_OFF"
+    echo "$OPT_CANCEL"
+}
+
+connect() {
+    echo "connect $*" | bluetoothctl
+}
+
+disconnect() {
+    echo "disconnect $*" | bluetoothctl
+}
+
+selopt() {
+    addr="$(echo "$*" | awk '{ print $2 }')"
+    opt=$(opts | menu -i -p 'Option')
+
+    case "$opt" in
+        "$OPT_ON")  connect "$addr"; selopt "$*" ;;
+        "$OPT_OFF") disconnect "$addr"; selopt "$*" ;;
+        *) seldevice ;;
+    esac
+}
+
+seldevice() {
+    opt=$(devices | menu -i -p 'Bluetooth device')
+    if [ "$opt" ]; then
+        selopt "$opt"
+    else
+        exit
+    fi
+}
+
+echo "power on" | bluetoothctl
+seldevice
