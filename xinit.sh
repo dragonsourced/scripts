@@ -6,8 +6,6 @@ xrandr --output HDMI-1 --off
 # shellcheck source=/home/Gordon/.fehbg
 [ -f ~/.fehbg ] && . ~/.fehbg
 
-compton -czbCo0.2
-
 settheme() {
     if [ "$(date +%H)" -ge 16 ]; then
         theme set dark
