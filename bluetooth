@@ -24,7 +24,7 @@ disconnect() {
 
 selopt() {
     addr="$(echo "$*" | awk '{ print $2 }')"
-    opt=$(opts | menu -i -p 'Option')
+    opt=$(opts | menu -i -p "$*")
 
     case "$opt" in
         "$OPT_ON")  connect "$addr"; selopt "$*" ;;
@@ -34,7 +34,7 @@ selopt() {
 }
 
 seldevice() {
-    opt=$(devices | menu -i -p 'Bluetooth device')
+    opt=$(devices | menu -i -p 'Bluetooth')
     if [ "$opt" ]; then
         selopt "$opt"
     else
