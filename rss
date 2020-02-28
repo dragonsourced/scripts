@@ -81,7 +81,7 @@ view_entry() {
 
     case "$opt" in
         "$OPT_MPV") yt "$media" ;;
-        "$OPT_AUD") mpv --no-video "$media" ;;
+        "$OPT_AUD") clear; mpv --no-video "$media" ;;
         "$OPT_WWW") sensible-browser "$link" ;;
         "$OPT_CPY") echo "$link" | xsel -b ;;
         *) return;
