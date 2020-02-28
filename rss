@@ -29,7 +29,6 @@ feeds() {
         fi
         i=$((i+1))
     done
-    echo ":$a:" 1>&2
 }
 
 strip_new() {
@@ -83,6 +82,7 @@ line() {
 }
 
 view_entry() {
+    echo "AAAAAGH"
     opt=$(view_opts | menu -i -p "$*")
 
     case "$opt" in
@@ -111,8 +111,7 @@ view_feed() {
     [ "$n" -gt 0 ] && a="-a $(seq -s , 0 $((n-1)))"
     # shellcheck disable=2086
     entry=$(strip_new "$(entries "$feed" | menu $a -i -p "$feed")")
-    line="$(sfeed_fmt title < "$2" | find_line "$entry")"
-    echo ":$line:"
+    line="$(sfeed_fmt title < "$feed" | find_line "$entry")"
     [ "$line" ] || return
 
     link="$(sfeed_fmt link < "$feed" | line "$line")"
