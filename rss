@@ -8,9 +8,26 @@ isfeed() {
 
 FEEDS=~/.sfeed/feeds
 
+new_in() {
+    find "$*" -type f -exec cat '{}' \; | sfeed_fmt new title | wc -l
+}
+
+lsopt() {
+    for d in *; do
+        n=$(new_in "$d")
+        if [ "$n" -gt 0 ]; then
+            echo "$d ($n new)"
+        else
+            echo "$d"
+        fi
+    done
+}
+
 selfeed() {
     # shellcheck disable=2012
-    opt=$(ls | menu -i -p RSS)
+    opt=$(lsopt | menu -i -p RSS)
+    opt="$(echo "$opt" | sed 's/ ([0-9]* new)$//')"
+    echo "$opt"
     if [ "$opt" ] && [ -d "$opt" ]; then
         FEED="$opt"
         if isfeed "$FEED"; then
@@ -89,13 +106,16 @@ is_media() {
 openopts() {
     link="$*"
 
-    is_media "$link" && if [ "$DIPLAY" ]; then
-        echo "$OPT_YT"
-        echo "$OPT_AUD"
-    else
-        echo "$OPT_AUD"
-        echo "$OPT_YT"
+    if is_media "$link"; then
+        if [ "$DISPLAY" ]; then
+            echo "$OPT_YT"
+            echo "$OPT_AUD"
+        else
+            echo "$OPT_AUD"
+            echo "$OPT_YT"
+        fi
     fi
+
     echo "$OPT_WWW"
     echo "$OPT_CP"
     echo "$OPT_X"
@@ -111,13 +131,12 @@ opts() {
     [ "$link" ] || link="$(sfmt "$line" link)"
     author="$(sfmt "$line" author)"
     content="$(content "$line")"
-    echo "$link"
     opt="$(openopts "$link" | menu -i -mesg "$content" -p "$author")"
 
     if [ "$opt" ]; then
         case "$opt" in
-            "$OPT_AUD") mpv --no-video "$link" ;;
             "$OPT_YT") yt "$link" ;;
+            "$OPT_AUD") mpv --no-video "$link" ;;
             "$OPT_WWW") sensible-browser "$link" ;;
             "$OPT_CP") echo "$link" | xsel -b ;;
             *) opts ;;
