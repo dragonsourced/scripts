@@ -43,8 +43,59 @@ entries() {
     done
 }
 
+OPT_MPV="Open in mpv"
+OPT_AUD="Open in mpv (audio only)"
+OPT_WWW="Open in web browser"
+OPT_CPY="Copy link to clipboard"
+OPT_NAH="[ Cancel ]"
+
+view_opts() {
+    if [ "$media" ]; then
+        if [ "$DISPLAY" ]; then
+            echo "$OPT_MPV"
+            echo "$OPT_AUD"
+        else
+            echo "$OPT_AUD"
+            echo "$OPT_MPV"
+        fi
+    fi
+    echo "$OPT_WWW"
+    echo "$OPT_CPY"
+    echo "$OPT_NAH"
+}
+
+escape() {
+    echo "$*" | sed -e 's/\[/\\[/g' -e 's/\]/\\]/g' -e 's/\*/\\*/g' -e 's/\./\\./g'
+}
+
+line_of() {
+    sfeed_fmt title < "$2" | grep -n "^$(escape "$1")$" | sed 's/:.*$//' | head -1
+}
+
+line() {
+    head -"$*" | tail -1
+}
+
 view_entry() {
-    echo "$*"
+    opt=$(view_opts | menu -i -p "$*")
+
+    case "$opt" in
+        "$OPT_MPV") yt "$media" ;;
+        "$OPT_AUD") mpv --no-video "$media" ;;
+        "$OPT_WWW") sensible-browser "$link" ;;
+        "$OPT_CPY") echo "$link" | xsel -b ;;
+        *) return;
+    esac
+
+    exit
+}
+
+is_media() {
+    case $* in
+        *youtube.com*) true ;;
+        *.mp4*|*.m4a*|*.mp3*) true ;;
+        *) false ;;
+    esac
 }
 
 view_feed() {
@@ -53,15 +104,25 @@ view_feed() {
     a=""
     [ "$n" -gt 0 ] && a="-a $(seq -s , 0 $((n-1)))"
     # shellcheck disable=2086
-    entry=$(entries "$feed" | menu $a -i -p "$feed")
+    entry=$(strip_new "$(entries "$feed" | menu $a -i -p "$feed")")
+    line="$(line_of "$entry" "$feed")"
+    echo ":$line:"
+    [ "$line" ] || return
+
+    link="$(sfeed_fmt link < "$feed" | line "$line")"
+
+    media="$(sfeed_fmt enclosure < "$feed" | line "$line")"
+    if ! [ "$media" ] && is_media "$link"; then
+        media="$link"
+    fi
+
     view_entry "$entry"
 }
 
 selfeed() {
     p="RSS"
     [ "$PWD" != $feedpath ] && p="$(basename "$PWD")"
-    opt="$(feeds | menu -i -p "$p")"
-    opt=$(strip_new "$opt")
+    opt=$(strip_new "$(feeds | menu -i -p "$p")")
     if [ -d "$opt" ]; then
         cd "$opt" || return
         selfeed
