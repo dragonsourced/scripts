@@ -15,19 +15,14 @@ new_in() {
 }
 
 feeds() {
-    a=""
-    i=0
     for f in *; do
         [ -d "$f" ] && f="$f"
         n=$(new_in "$f")
         if [ "$n" -gt 0 ]; then
             echo "$f ($n new)"
-            [ "$a" ] || a="-a "
-            a="$a$i,"
         else
             echo "$f"
         fi
-        i=$((i+1))
     done
 }
 
@@ -52,6 +47,7 @@ OPT_MPV="Open in mpv"
 OPT_AUD="Open in mpv (audio only)"
 OPT_WWW="Open in web browser"
 OPT_CPY="Copy link to clipboard"
+OPT_DSC="View full description"
 OPT_NAH="[ Cancel ]"
 
 view_opts() {
@@ -66,6 +62,7 @@ view_opts() {
     fi
     echo "$OPT_WWW"
     echo "$OPT_CPY"
+    echo "$OPT_DSC"
     echo "$OPT_NAH"
 }
 
@@ -82,15 +79,15 @@ line() {
 }
 
 view_entry() {
-    echo "AAAAAGH"
-    opt=$(view_opts | menu -i -p "$*")
+    opt=$(view_opts | menu -i -p "$*" -mesg "$desc")
 
     case "$opt" in
         "$OPT_MPV") yt "$media" ;;
         "$OPT_AUD") clear; mpv --no-video "$media" ;;
         "$OPT_WWW") sensible-browser "$link" ;;
         "$OPT_CPY") echo "$link" | xsel -b ;;
-        *) return;
+        "$OPT_DSC") echo "$fulldesc" > /tmp/rss.desc; st -e sensible-pager /tmp/rss.desc; rm /tmp/rss.desc ;;
+        *) return 0;
     esac
 
     exit
@@ -104,16 +101,26 @@ is_media() {
     esac
 }
 
+desc_fmt() {
+    desc="$(echo "$*" | fmt | sed 's/\\n/\n/g')"
+    if [ "$(echo "$desc" | wc -l)" -gt 7 ]; then
+        echo "$desc" | head -7
+        echo ...
+    else
+        echo "$desc"
+    fi
+}
+
 view_feed() {
     feed="$*"
     n=$(new_of "$feed")
-    a=""
-    [ "$n" -gt 0 ] && a="-a $(seq -s , 0 $((n-1)))"
     # shellcheck disable=2086
-    entry=$(strip_new "$(entries "$feed" | menu $a -i -p "$feed")")
+    entry=$(strip_new "$(entries "$feed" | menu -i -p "$feed")")
     line="$(sfeed_fmt title < "$feed" | find_line "$entry")"
     [ "$line" ] || return
 
+    fulldesc="$(sfeed_fmt content < "$feed" | line "$line")"
+    desc="$(desc_fmt "$fulldesc")"
     link="$(sfeed_fmt link < "$feed" | line "$line")"
 
     media="$(sfeed_fmt enclosure < "$feed" | line "$line")"
@@ -121,15 +128,14 @@ view_feed() {
         media="$link"
     fi
 
-    view_entry "$entry"
+    view_entry "$entry" && view_feed "$*"
 }
 
 selfeed() {
     p="RSS"
     [ "$PWD" != $feedpath ] && p="$(basename "$PWD")"
-    feeds
     # shellcheck disable=2086
-    opt=$(strip_new "$(feeds | menu $a -i -p "$p")")
+    opt=$(strip_new "$(feeds | menu -i -p "$p")")
     if [ -d "$opt" ]; then
         cd "$opt" || return
         selfeed
