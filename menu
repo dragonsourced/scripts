@@ -1,7 +1,30 @@
 #!/bin/sh
 
+escape() {
+    echo "$*" | sed -e 's/"/\"/g' -e 's/\\/\\\\/g'
+}
+
+while [ "$1" ]; do
+    case $1 in
+        -p|--prompt)
+            p="-p \"$(escape "$2")\""
+            shift 2 ;;
+        -m|--mesg)
+            m="-mesg \"$(escape "$2")\""
+            shift 2 ;;
+        -i|--insensitive)
+            i='-i'
+            shift ;;
+        *) shift ;;
+    esac
+done
+
+menu() {
+    dmenu -l 30 "$@"
+}
+
 if [ "$DISPLAY" ]; then
-    rofi -dmenu "$@"
+    eval "rofi -dmenu $p $m $i"
 else
     fzf --layout=reverse
 fi
