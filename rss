@@ -86,8 +86,13 @@ view_entry() {
         "$OPT_AUD") clear; mpv --no-video "$media" ;;
         "$OPT_WWW") sensible-browser "$link" ;;
         "$OPT_CPY") echo "$link" | xsel -b ;;
-        "$OPT_DSC") echo "$fulldesc" > /tmp/rss.desc; st -e sensible-pager /tmp/rss.desc; rm /tmp/rss.desc ;;
-        *) return 0;
+        "$OPT_DSC")
+            echo "$fulldesc" > /tmp/rss.desc
+            st -e sensible-pager /tmp/rss.desc
+            rm /tmp/rss.desc
+            view_entry "$@"
+            return 0 ;;
+        *) return 0 ;;
     esac
 
     exit
