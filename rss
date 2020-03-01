@@ -79,7 +79,7 @@ line() {
 }
 
 view_entry() {
-    opt=$(view_opts | menu -i -p "$*" -mesg "$desc")
+    opt=$(view_opts | menu -i -p "$*" --mesg "$desc")
 
     case "$opt" in
         "$OPT_MPV") yt "$media" ;;
