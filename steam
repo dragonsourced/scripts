@@ -2,11 +2,11 @@
 
 exe=/usr/games/steam
 
-h=$(($(date +%H)))
+h=$(date +%H)
 
-if [ $h -gt 21 ]; then
+if [ "$h" -gt 21 ]; then
     notify-send "No video games after 9 pm."
-elif [ $h -lt 12 ]; then
+elif [ "$h" -lt 12 ]; then
     notify-send "No video games before noon."
 else
     $exe "$@"
