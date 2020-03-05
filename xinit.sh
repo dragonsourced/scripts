@@ -17,6 +17,8 @@ settheme() {
 # For theme script.
 xfsettingsd
 
+compton -CczbfD1 -o0.5
+
 redshift &
 settheme &
 wm
