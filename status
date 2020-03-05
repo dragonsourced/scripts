@@ -14,7 +14,6 @@ has_compositor() {
 # Colours/fonts.
 
 MENU_FONT="${MENU_FONT:-Charter:size=10}"
-MENU_OPACITY="${MENU_OPACITY:-00}"
 
 MENU_BG=$(theme get bg)
 MENU_FG=$(theme get fg)
