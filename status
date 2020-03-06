@@ -8,7 +8,7 @@ MARGIN=$(seq -s ' ' $MARGIN | tr -d '0-9')
 # Is a compositor running?
 
 has_compositor() {
-    pgrep -x compton > /dev/null 2> /dev/null
+    pidof compton > /dev/null 2> /dev/null
 }
 
 # Colours/fonts.
