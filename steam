@@ -9,5 +9,5 @@ if [ "$h" -gt 21 ]; then
 elif [ "$h" -lt 12 ]; then
     notify-send "No video games before noon."
 else
-    homework isdone && $exe "$@"
+    homework \? && $exe "$@"
 fi
