@@ -24,7 +24,7 @@ case $1 in
             Y*|y*) true ;;
             N*|n*) false ;;
         esac ;;
-    i*|d*)
+    ?)
         if $0 get; then
             true
         else
@@ -36,5 +36,5 @@ case $1 in
         echo "Usage: $0 menu"
         echo "       $0 set [y/n]"
         echo "       $0 get"
-        echo "       $0 isdone" ;;
+        echo "       $0 ?" ;;
 esac
