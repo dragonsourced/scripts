@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cd ~/pkg/tor-browser_en-US || exit
+ok2play && ./start-tor-browser.desktop
