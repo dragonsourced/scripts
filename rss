@@ -156,4 +156,4 @@ selfeed() {
 }
 
 cd $feedpath || exit
-selfeed
+ok2play && selfeed
