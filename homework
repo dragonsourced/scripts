@@ -1,0 +1,40 @@
+#!/bin/sh
+
+HWORKF=/tmp/homework
+
+opts() {
+    echo Yes
+    echo No
+}
+
+case $1 in
+    m*)
+        o=$(opts | menu -i -p 'Have you done your homework yet?')
+        [ "$o" ] && $0 set "$o"
+        ;;
+    s*)
+        case $(echo "$2" | tr '[:upper:]' '[:lower:]') in
+            y*) echo yes > ${HWORKF} ;;
+            n*) echo no  > ${HWORKF} ;;
+        esac ;;
+    g*)
+        [ -f ${HWORKF} ] || $0 set no
+        cat /tmp/homework
+        case $(cat /tmp/homework) in
+            Y*|y*) true ;;
+            N*|n*) false ;;
+        esac ;;
+    i*|d*)
+        if $0 get; then
+            true
+        else
+            notify-send -u critical "Do some homework first."
+            false
+        fi
+        ;;
+    *)
+        echo "Usage: $0 menu"
+        echo "       $0 set [y/n]"
+        echo "       $0 get"
+        echo "       $0 isdone" ;;
+esac
