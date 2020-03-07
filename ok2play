@@ -1,7 +1,6 @@
 #!/bin/sh
 
 h=$(date +%H)
-h=30
 
 if [ "$h" -gt 21 ]; then
     notify-send "No goofing off after 9 pm."
