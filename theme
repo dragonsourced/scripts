@@ -3,8 +3,8 @@
 # Simple command to get (attributes of) the current theme.
 #
 # If you want to add a new theme, you must add a corresponding entry in
-# ~/src/ui/themes, ~/src/ui/st/themes, ~/src/ui/dunstw, ~/.config/rofi,
-# ~/.config/spicetify/Themes, and a new GTK+ theme called oomox-<theme>
+# ~/src/ui/themes, ~/src/ui/st/themes, ~/src/ui/dunst, ~/.config/rofi,
+# and ~/.config/spicetify/Themes.
 #
 
 THEMEFILE=/tmp/theme
@@ -56,10 +56,6 @@ gtk_set() {
 }
 
 gtk() {
-    export GTK_THEME="oomox-$THEME"
-    export ICON_THEME="oomox-$THEME"
-    export FONT="Charter 10"
-
     gtk_set Net/ThemeName     "$(theme get gtk)"
     gtk_set Net/IconThemeName "$(theme get icon)"
     gtk_set Gtk/FontName      "$(theme get font)"
