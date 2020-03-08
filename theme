@@ -52,7 +52,7 @@ spotify() {
 }
 
 gtk_set() {
-    sed -i "s|^$1 .*|$1 \"$2\"|" ~/.xsettingsd
+    sed -i "s|^$1.*|$1 \"$2\"|" ~/.xsettingsd
 }
 
 gtk() {
