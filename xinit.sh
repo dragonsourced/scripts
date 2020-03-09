@@ -3,9 +3,6 @@
 # Turn off the connected HDMI ports, if any.
 xrandr --output HDMI-1 --off
 
-# shellcheck source=/home/Gordon/.fehbg
-[ -f ~/.fehbg ] && . ~/.fehbg
-
 settheme() {
     if [ "$(date +%H)" -ge 16 ]; then
         theme set dark
