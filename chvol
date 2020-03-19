@@ -8,21 +8,18 @@ setvol()
 }
 
 setvol "$@"
-vol=$(amixer get Master | grep % | tr '[' ' ' | tr ']' ' ' | tr '%' ' ' | awk '{ print $5 }')
-vol=$(echo "$vol" | tr '\n' ' ' | awk '{ print $1 }')
-num=$(echo "$vol" | tr -d '%')
-bar=$(seq -s "─" "$((num/3))" | tr -d '0-9')
-mute=$(amixer get 'Master' | grep % | tr '[' ' ' | tr ']' ' ' | awk '{ print $6; }')
-mute=$(echo "$mute" | uniq)
+vol=$(amixer get Master | awk '/%/ { print $5 }' | tr -d '[]%' | uniq)
+bar=$(seq -s "─" "$((vol/3))" | tr -d '0-9')
+mute=$(amixer get 'Master' | awk '/%/ { print $6 }' | tr '[]' ' ' | uniq)
 
 icon=audio-volume-muted-blocking
 urgency=normal
 if [ "$mute" = "off" ]; then
     icon=volume-level-muted
-elif [ "$num" -lt "25" ]; then
+elif [ "$vol" -lt "25" ]; then
     icon=volume-level-low
     urgency=low
-elif [ "$num" -lt "50" ]; then
+elif [ "$vol" -lt "50" ]; then
     icon=volume-level-medium
     urgency=normal
 else
