@@ -1,0 +1,23 @@
+#!/bin/sh
+
+win=$(xdotool getwindowfocus)
+
+wgeom=$(xdotool getwindowgeometry "$win" | grep Geometry | awk '{ print $2 }' | tr 'x' ' ')
+dgeom="$(xdotool getdisplaygeometry)"
+
+dw=$(echo "$dgeom" | awk '{ print $1 }')
+dh=$(echo "$dgeom" | awk '{ print $2 }')
+
+ww=$(echo "$wgeom" | awk '{ print $1 }')
+wh=$(echo "$wgeom" | awk '{ print $2 }')
+
+while [ "$1" ]; do
+    case $1 in
+        center) xdotool windowmove "$win" $(((dw - ww) / 2)) $(((dh - wh) / 2)) ;;
+        top)    xdotool windowmove "$win" x 0 ;;
+        bottom) xdotool windowmove "$win" x $((dh - wh)) ;;
+        left)   xdotool windowmove "$win" 0 y ;;
+        right)  xdotool windowmove "$win" $((dw - ww)) y ;;
+    esac
+    shift
+done
