@@ -2,6 +2,14 @@
 
 feedpath=~/.sfeed/feeds
 
+pager() {
+    if [ "$DISPLAY" ]; then
+        sensible-pager
+    else
+        ${PAGER:-less}
+    fi
+}
+
 new_of() {
     sfeed_fmt new < "$*" | wc -l
 }
@@ -48,6 +56,7 @@ OPT_AUD="Open in mpv (audio only)"
 OPT_WWW="Open in web browser"
 OPT_CPY="Copy link to clipboard"
 OPT_DSC="View full description"
+OPT_TTL="View full title"
 OPT_NAH="[ Cancel ]"
 
 view_opts() {
@@ -63,6 +72,7 @@ view_opts() {
     echo "$OPT_WWW"
     echo "$OPT_CPY"
     echo "$OPT_DSC"
+    echo "$OPT_TTL"
     echo "$OPT_NAH"
 }
 
@@ -88,7 +98,13 @@ view_entry() {
         "$OPT_CPY") echo "$link" | xsel -b ;;
         "$OPT_DSC")
             echo "$fulldesc" > /tmp/rss.desc
-            st -e sensible-pager /tmp/rss.desc
+            st -e pager /tmp/rss.desc
+            rm /tmp/rss.desc
+            view_entry "$@"
+            return 0 ;;
+        "$OPT_TTL")
+            echo "$fulltitle" > /tmp/rss.desc
+            st -e pager /tmp/rss.desc
             rm /tmp/rss.desc
             view_entry "$@"
             return 0 ;;
@@ -125,6 +141,7 @@ view_feed() {
     [ "$line" ] || return
 
     fulldesc="$(sfeed_fmt content < "$feed" | line "$line")"
+    fulltitle="$(sfeed_fmt title < "$feed" | line "$line")"
     desc="$(desc_fmt "$fulldesc")"
     link="$(sfeed_fmt link < "$feed" | line "$line")"
 
