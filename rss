@@ -4,9 +4,9 @@ feedpath=~/.sfeed/feeds
 
 pager() {
     if [ "$DISPLAY" ]; then
-        sensible-pager
+        st -e sensible-pager "$@"
     else
-        ${PAGER:-less}
+        ${PAGER:-less} "$@"
     fi
 }
 
@@ -98,13 +98,13 @@ view_entry() {
         "$OPT_CPY") echo "$link" | xsel -b ;;
         "$OPT_DSC")
             echo "$fulldesc" > /tmp/rss.desc
-            st -e pager /tmp/rss.desc
+            pager /tmp/rss.desc
             rm /tmp/rss.desc
             view_entry "$@"
             return 0 ;;
         "$OPT_TTL")
             echo "$fulltitle" > /tmp/rss.desc
-            st -e pager /tmp/rss.desc
+            pager /tmp/rss.desc
             rm /tmp/rss.desc
             view_entry "$@"
             return 0 ;;
