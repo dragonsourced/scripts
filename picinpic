@@ -1,0 +1,7 @@
+
+#!/bin/sh
+
+bspc node focused -t floating -l above
+xdotool getactivewindow windowsize 500 300
+mvwin bottom right
+bspc node focused -g sticky
