@@ -174,8 +174,4 @@ selfeed() {
 
 cd $feedpath || exit
 
-if [ "$DISPLAY" ]; then
-    ok2play && selfeed
-else
-    selfeed
-fi
+selfeed
