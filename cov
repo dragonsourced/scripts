@@ -1,6 +1,6 @@
 #!/bin/sh
 
-URL=https://covid2019-api.herokuapp.com/v2/current
+URL=https://api.thevirustracker.com/free-api?global=stats
 FILE=/tmp/covid19.json
 TMPFILE=/tmp/covid19_tmp.json
 
@@ -15,11 +15,11 @@ cleanup() {
 }
 
 total() {
-    jq -M ".data[].$1" < $FILE | paste -sd+ | bc
+    jq -M ".results[].total_$1" < $FILE | paste -sd+ | bc
 }
 
-confirmed() { echo "$(total confirmed) C"; }
-active()    { echo "$(total active) A"; }
+confirmed() { echo "$(total cases) C"; }
+active()    { echo "$(total unresolved) A"; }
 dead()      { echo "$(total deaths) D"; }
 recovered() { echo "$(total recovered) R"; }
 
