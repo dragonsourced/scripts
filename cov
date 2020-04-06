@@ -31,9 +31,8 @@ fatality_rate() {
     echo "$(total deaths) / $(total confirmed) * 100" | bc -l
 }
 
-[ -f $TMPFILE ] || fetch &
-
 case $1 in
+    fetch) [ -f $TMPFILE ] || fetch ;;
     "") printf "%s   %0.2f%%\\r\\n" "$(cases)" "$(fatality_rate)" ;;
     *) total "$1" ;;
 esac
