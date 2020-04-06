@@ -1,12 +1,12 @@
 #!/bin/sh
 
-URL=https://api.thevirustracker.com/free-api?global=stats
+URL='https://api.thevirustracker.com/free-api?global=stats'
 FILE=/tmp/covid19.json
 TMPFILE=/tmp/covid19_tmp.json
 
 fetch() {
     touch $TMPFILE
-    curl -s $URL -o $TMPFILE
+    curl -s "$URL" -o $TMPFILE
     mv $TMPFILE $FILE
 }
 
@@ -28,7 +28,7 @@ cases() {
 }
 
 fatality_rate() {
-    echo "$(total deaths) / $(total confirmed) * 100" | bc -l
+    echo "$(total deaths) / $(total cases) * 100" | bc -l
 }
 
 case $1 in
