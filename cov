@@ -5,6 +5,7 @@ FILE=/tmp/covid19.json
 TMPFILE=/tmp/covid19_tmp.json
 
 fetch() {
+    touch $TMPFILE
     curl -s $URL -o $TMPFILE
     mv $TMPFILE $FILE
 }
@@ -17,5 +18,22 @@ total() {
     jq -M ".data[].$1" < $FILE | paste -sd+ | bc
 }
 
+confirmed() { echo "$(total confirmed) C"; }
+active()    { echo "$(total active) A"; }
+dead()      { echo "$(total deaths) D"; }
+recovered() { echo "$(total recovered) R"; }
+
+cases() {
+    echo "$(confirmed)   $(dead)   $(active)   $(recovered)"
+}
+
+fatality_rate() {
+    echo "$(total deaths) / $(total confirmed) * 100" | bc -l
+}
+
 [ -f $TMPFILE ] || fetch &
-echo "†$(total deaths)   ⚕$(total active)   +$(total recovered)"
+
+case $1 in
+    "") printf "%s   %0.2f%%\\r\\n" "$(cases)" "$(fatality_rate)" ;;
+    *) total "$1" ;;
+esac
