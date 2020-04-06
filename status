@@ -47,13 +47,7 @@ _date() { date +'%D'; }
 
 # TODO: integrate with headphones
 vol() {
-    if amixer get Headphone > /dev/null 2> /dev/null; then
-        get=Headphone
-    else
-        get=Master
-    fi
-
-    amixer get $get | tr ' ' '\n' | grep % | tr -d '[]' | uniq
+    amixer get Master | tr ' ' '\n' | grep % | tr -d '[]' | uniq
 }
 
 bat() { acpi | tr ' ' '\n' | grep % | tr -d ','; }
