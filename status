@@ -13,7 +13,7 @@ has_compositor() {
 
 # Colours/fonts.
 
-FONT="${FONT:-Linux Libertine O:size=12}"
+FONT="${FONT:-Charter:size=10}"
 
 BG=$(theme get bg)
 FG=$(theme get fg)
