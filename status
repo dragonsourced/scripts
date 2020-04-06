@@ -13,19 +13,19 @@ has_compositor() {
 
 # Colours/fonts.
 
-MENU_FONT="${MENU_FONT:-Charter:size=10}"
+FONT="${FONT:-Linux Libertine O:size=12}"
 
-MENU_BG=$(theme get bg)
-MENU_FG=$(theme get fg)
-MENU_OPACITY=$(theme get opacity)
+BG=$(theme get bg)
+FG=$(theme get fg)
+OPACITY=$(theme get opacity)
 
-if has_compositor && [ "$MENU_OPACITY" != ff ]; then
-    MENU_BG="${MENU_OPACITY}$MENU_BG"
+if has_compositor && [ "$OPACITY" != ff ]; then
+    BG="${OPACITY}$BG"
 fi
 
 bar() {
     [ "$1" = b ] && bottom='-b'
-    lemonbar "$@" -d -f "$MENU_FONT" -B "#$MENU_BG" -F "#$MENU_FG" "$bottom"
+    lemonbar "$@" -d -f "$FONT" -B "#$BG" -F "#$FG" "$bottom"
 }
 
 status() {
@@ -45,8 +45,6 @@ status() {
 _time() { date +'%T'; }
 _date() { date +'%D'; }
 
-_layout() { layout | tr '[:lower:]' '[:upper:]'; }
-
 # TODO: integrate with headphones
 vol() {
     if amixer get Headphone > /dev/null 2> /dev/null; then
@@ -62,5 +60,5 @@ bat() { acpi | tr ' ' '\n' | grep % | tr -d ','; }
 
 # Top
 
-status 1 '_time' 'mori'    '_date' -b &
-status 0 'vol'   '_layout' 'bat'
+status 1  '_time' 'mori' '_date' -b &
+status 0  'vol'   'cov'  'bat'
