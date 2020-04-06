@@ -1,0 +1,21 @@
+#!/bin/sh
+
+URL=https://covid2019-api.herokuapp.com/v2/current
+FILE=/tmp/covid19.json
+TMPFILE=/tmp/covid19_tmp.json
+
+fetch() {
+    curl -s $URL -o $TMPFILE
+    mv $TMPFILE $FILE
+}
+
+cleanup() {
+    rm -f $FILE
+}
+
+total() {
+    jq -M ".data[].$1" < $FILE | paste -sd+ | bc
+}
+
+[ -f $TMPFILE ] || fetch &
+echo "†$(total deaths)   ⚕$(total active)   +$(total recovered)"
