@@ -18,7 +18,7 @@ new_in() {
     if [ -f "$*" ]; then
         new_of "$*"
     elif [ -d "$*" ]; then
-        find "$*" -type f -exec cat '{}' \; | sfeed_fmt new | wc -l
+        find "$*" -type f -exec head '{}' \; | sfeed_fmt new | wc -l
     fi
 }
 
