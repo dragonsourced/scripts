@@ -3,12 +3,12 @@
 FILE=~/docs/Anglish.tsv
 
 from() {
-    grep "^$*" $FILE
+    grep -i "^$*" $FILE
 }
 
 find() {
-    grep "	$*" $FILE
-    grep "; $*"  $FILE
+    grep -i "	$*" $FILE
+    grep -i "; $*"  $FILE
 }
 
 to() {
