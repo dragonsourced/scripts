@@ -7,8 +7,10 @@ from() {
 }
 
 find() {
-    grep -i "	$*" $FILE
-    grep -i "; $*"  $FILE
+    grep -i "	$* " $FILE
+    grep -i "; $* "  $FILE
+    grep -i "	$*	" $FILE
+    grep -i "; $*	"  $FILE
 }
 
 to() {
