@@ -9,8 +9,13 @@ from() {
 find() {
     grep -i "	$* " $FILE
     grep -i "; $* "  $FILE
+    grep -i "| $* "  $FILE
+    grep -i "	$*;" $FILE
+    grep -i "; $*;"  $FILE
+    grep -i "| $*;"  $FILE
     grep -i "	$*	" $FILE
     grep -i "; $*	"  $FILE
+    grep -i "| $*	"  $FILE
 }
 
 to() {
@@ -23,5 +28,6 @@ to() {
 case $1 in
     t*) shift; to   "$*" ;;
     f*) shift; from "$*" ;;
+    a*) shift; to "$*"; from "$*"; true ;;
     *)  echo "Usage: $0 to/from [WORD]" ;;
 esac
