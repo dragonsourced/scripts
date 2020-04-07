@@ -6,13 +6,16 @@ from() {
     grep "^$*" $FILE
 }
 
+find() {
+    grep "	$*" $FILE
+    grep "; $*"  $FILE
+}
+
 to() {
-    grep "\\t$*" $FILE
-    grep "\\ta  $*" $FILE
-    grep "\\tan $*" $FILE
-    grep "; $*" $FILE
-    grep "; a  $*" $FILE
-    grep "; an $*" $FILE
+    find "$*"
+    find "a $*"
+    find "an $*"
+    find "to $*"
 }
 
 case $1 in
