@@ -19,7 +19,7 @@ total() {
 }
 
 new() {
-    jq -M ".Global.Total$1" < $FILE
+    jq -M ".Global.New$1" < $FILE
 }
 
 confirmed() { echo "$(new Confirmed) C"; }
