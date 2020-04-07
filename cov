@@ -1,12 +1,12 @@
 #!/bin/sh
 
-URL='https://api.thevirustracker.com/free-api?global=stats'
+URL=https://api.covid19api.com/summary 
 FILE=/tmp/covid19.json
 TMPFILE=/tmp/covid19_tmp.json
 
 fetch() {
     touch $TMPFILE
-    curl -s "$URL" -o $TMPFILE
+    curl -s $URL -o $TMPFILE
     mv $TMPFILE $FILE
 }
 
@@ -15,24 +15,36 @@ cleanup() {
 }
 
 total() {
-    jq -M ".results[].total_$1" < $FILE | paste -sd+ | bc
+    jq -M ".Global.Total$1" < $FILE
 }
 
-confirmed() { echo "$(total cases) C"; }
-active()    { echo "$(total unresolved) A"; }
-dead()      { echo "$(total deaths) D"; }
-recovered() { echo "$(total recovered) R"; }
+new() {
+    jq -M ".Global.Total$1" < $FILE
+}
+
+confirmed() { echo "$(new Confirmed) C"; }
+dead()      { echo "$(new Deaths) D"; }
+recovered() { echo "$(new Recovered) R"; }
 
 cases() {
-    echo "$(confirmed)   $(dead)   $(active)   $(recovered)"
+    echo "$(confirmed)   $(dead)   $(recovered)"
 }
 
 fatality_rate() {
-    echo "$(total deaths) / $(total cases) * 100" | bc -l
+    echo "$(total Deaths) / $(total Confirmed) * 100" | bc -l
+}
+
+fchif() {
+    [ -f $FILE ] || fetch
 }
 
 case $1 in
     fetch) [ -f $TMPFILE ] || fetch ;;
-    "") printf "%s   %0.2f%%\\r\\n" "$(cases)" "$(fatality_rate)" ;;
-    *) total "$1" ;;
+    "") fchif; printf "%s   %0.2f%%\\r\\n" "$(cases)" "$(fatality_rate)" ;;
+    total) fchif; total "$2" ;;
+    new)   fchif; new   "$2" ;;
+    *)
+        echo "Usage: $0"
+        echo "       $0 total/new [statistic]"
+        ;;
 esac
