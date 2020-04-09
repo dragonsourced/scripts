@@ -19,7 +19,6 @@ total() {
 }
 
 confirmed() { echo "$(total confirmed) C"; }
-active()    { echo "$(total active) A"; }
 dead()      { echo "$(total deaths) D"; }
 recovered() { echo "$(total recovered) R"; }
 
