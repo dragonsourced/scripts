@@ -18,12 +18,17 @@ total() {
     jq -M ".$1" < $FILE
 }
 
+total_active() {
+    echo $(($(total confirmed) - $(total dead) - $(total recovered)))
+}
+
 confirmed() { echo "$(total confirmed) C"; }
+active()    { echo "$(total_active) A"; }
 dead()      { echo "$(total deaths) D"; }
 recovered() { echo "$(total recovered) R"; }
 
 cases() {
-    echo "$(confirmed)   $(dead)   $(recovered)"
+    echo "$(confirmed)   $(active)   $(dead)   $(recovered)"
 }
 
 fatality_rate() {
