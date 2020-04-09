@@ -1,0 +1,10 @@
+#!/bin/sh
+
+FILE=/tmp/frv
+
+popup() {
+    zenity --entry --text 'Enter a French verb' > $FILE
+}
+
+popup && verbiste "$(cat $FILE)"
+rm $FILE
