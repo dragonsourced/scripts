@@ -1,6 +1,6 @@
 #!/bin/sh
 
-URL=https://api.covid19api.com/summary 
+URL=https://covid2019-api.herokuapp.com/total
 FILE=/tmp/covid19.json
 TMPFILE=/tmp/covid19_tmp.json
 
@@ -15,23 +15,20 @@ cleanup() {
 }
 
 total() {
-    jq -M ".Global.Total$1" < $FILE
+    jq -M ".$1" < $FILE
 }
 
-new() {
-    jq -M ".Global.New$1" < $FILE
-}
-
-confirmed() { echo "$(new Confirmed) C"; }
-dead()      { echo "$(new Deaths) D"; }
-recovered() { echo "$(new Recovered) R"; }
+confirmed() { echo "$(total confirmed) C"; }
+active()    { echo "$(total active) A"; }
+dead()      { echo "$(total deaths) D"; }
+recovered() { echo "$(total recovered) R"; }
 
 cases() {
     echo "$(confirmed)   $(dead)   $(recovered)"
 }
 
 fatality_rate() {
-    echo "$(total Deaths) / $(total Confirmed) * 100" | bc -l
+    echo "$(total deaths) / $(total confirmed) * 100" | bc -l
 }
 
 fchif() {
@@ -40,11 +37,10 @@ fchif() {
 
 case $1 in
     fetch) [ -f $TMPFILE ] || fetch ;;
-    "") fchif; printf "%s   %0.2f%%\\r\\n" "$(cases)" "$(fatality_rate)" ;;
-    total) fchif; total "$2" ;;
-    new)   fchif; new   "$2" ;;
+    "")  fchif; printf "%s   %0.2f%%\\r\\n" "$(cases)" "$(fatality_rate)" ;;
+    get) fchif; total "$2" ;;
     *)
         echo "Usage: $0"
-        echo "       $0 total/new [statistic]"
+        echo "       $0 get [statistic]"
         ;;
 esac
