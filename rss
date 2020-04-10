@@ -123,13 +123,16 @@ is_media() {
 }
 
 desc_fmt() {
-    desc="$(echo "$*" | fmt | sed -e 's/<[/a-z]*>//g' -e 's/&/&amp;/g' -e 's/\\n/\n/g')"
-    if [ "$(echo "$desc" | wc -l)" -gt 7 ]; then
-        echo "$desc" | head -7
-        echo ...
+    if command -v w3m > /dev/null; then
+        echo "$*" | sed 's/$/<br>/' | w3m -dump -T text/html
     else
-        echo "$desc"
+        desc="$(echo "$*" | fmt | sed -e 's/<[/a-z]*>//g' -e 's/&/&amp;/g' -e 's/\\n/\n/g')"
     fi
+}
+
+trim_desc() {
+    head -7
+    echo ...
 }
 
 view_feed() {
@@ -141,8 +144,9 @@ view_feed() {
     [ "$line" ] || return
 
     fulldesc="$(sfeed_fmt content < "$feed" | line "$line")"
+    fulldesc="$(desc_fmt "$fulldesc")"
     fulltitle="$(sfeed_fmt title < "$feed" | line "$line")"
-    desc="$(desc_fmt "$fulldesc")"
+    desc="$(echo "$fulldesc" | trim_desc)"
     link="$(sfeed_fmt link < "$feed" | line "$line")"
 
     media="$(sfeed_fmt enclosure < "$feed" | line "$line")"
