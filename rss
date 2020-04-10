@@ -123,7 +123,7 @@ is_media() {
 }
 
 desc_fmt() {
-    desc="$(echo "$*" | fmt | sed 's/\\n/\n/g')"
+    desc="$(echo "$*" | fmt | sed -e 's/<[/a-z]*>//g' -e 's/\\n/\n/g')"
     if [ "$(echo "$desc" | wc -l)" -gt 7 ]; then
         echo "$desc" | head -7
         echo ...
@@ -146,8 +146,11 @@ view_feed() {
     link="$(sfeed_fmt link < "$feed" | line "$line")"
 
     media="$(sfeed_fmt enclosure < "$feed" | line "$line")"
-    if ! [ "$media" ] && is_media "$link"; then
-        media="$link"
+    if ! [ "$media" ]; then
+        media="$(sfeed_fmt id < "$feed" | line "$line")"
+        if ! [ "$media" ] && is_media "$link"; then
+            media="$link"
+        fi
     fi
 
     view_entry "$entry" && view_feed "$*"
