@@ -47,7 +47,7 @@ _date() { date +'%D'; }
 
 # TODO: integrate with headphones
 vol() {
-    amixer get Master | tr ' ' '\n' | grep % | tr -d '[]' | uniq
+    amixer get Master | tr ' ' '\n' | grep % | tr -d '[]' | sed 1q
 }
 
 bat() { acpi | tr ' ' '\n' | grep % | tr -d ','; }
