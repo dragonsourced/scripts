@@ -1,13 +1,3 @@
 #!/bin/sh
 
-h=$(date +%H)
-
-if [ "$h" -gt 21 ]; then
-    notify-send "No goofing off after 9 pm."
-    false
-elif [ "$h" -lt 12 ]; then
-    notify-send "No goofing off before noon."
-    false
-else
-    homework \? && true
-fi
+homework \? && true
