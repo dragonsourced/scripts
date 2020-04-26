@@ -52,7 +52,7 @@ entries() {
     sfeed_fmt title < "$*" | while read -r e; do
         if [ $i -lt "$n" ]; then
             echo "$e (new)"
-        else
+        elif [ "$showold" ]; then
             echo "$e"
         fi
         i=$((i+1))
