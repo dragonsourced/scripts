@@ -1,6 +1,14 @@
 #!/bin/sh
 
 feedpath=~/.sfeed/feeds
+showold=yes
+
+while [ "$1" ]; do
+    case $1 in
+        n*) showold="" ;;
+    esac
+    shift
+done
 
 pager() {
     if [ "$DISPLAY" ]; then
@@ -28,7 +36,7 @@ feeds() {
         n=$(new_in "$f")
         if [ "$n" -gt 0 ]; then
             echo "$f ($n new)"
-        else
+        elif [ "$showold" ]; then
             echo "$f"
         fi
     done
