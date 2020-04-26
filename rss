@@ -43,7 +43,7 @@ feeds() {
 }
 
 strip_new() {
-    echo "$*" | sed 's/ ([0-9 ]*new)$//'
+    echo "$*" | sed 's/^([0-9 ]*new) //'
 }
 
 entries() {
