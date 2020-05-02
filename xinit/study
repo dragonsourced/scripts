@@ -1,20 +1,3 @@
 #!/bin/sh
 
-echo ":$*:" > /home/Gordon/eh
-
-# Turn off the connected HDMI ports, if any.
-xrandr --output HDMI-1 --off
-
-redshift &
-
-kbd() {
-    sleep 1
-    killall sxhkd
-    sxhkd -c ~/.config/sxhkd/minimal
-}
-
-wm &
-kbd &
-firefox --kiosk
-
-killall redshift
+kiosk firefox --kiosk
