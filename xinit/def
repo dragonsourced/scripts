@@ -1,7 +1,5 @@
 #!/bin/sh
 
-echo ":$*:" > /home/Gordon/eh
-
 # Turn off the connected HDMI ports, if any.
 xrandr --output HDMI-1 --off
 
