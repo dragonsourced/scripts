@@ -3,9 +3,22 @@
 feedpath=~/.sfeed/feeds
 showold=yes
 
+lines() {
+    find $feedpath -type f -exec cat {} \; | wc -l
+}
+
+update_rss() {
+    ln=$(lines)
+    sfeed_update
+    if [ "$(lines)" != "$ln" ]; then
+        DISPLAY=:0 notify-send 'RSS' 'New entries in the RSS feed.'
+    fi
+}
+
 while [ "$1" ]; do
     case $1 in
         n*) showold="" ;;
+        u*) update_rss; exit ;;
     esac
     shift
 done
