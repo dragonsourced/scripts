@@ -10,8 +10,13 @@ lines() {
 update_rss() {
     ln=$(lines)
     sfeed_update
-    if [ "$(lines)" != "$ln" ]; then
-        DISPLAY=:0 notify-send 'RSS' 'New entries in the RSS feed.'
+    ln2=$(lines)
+    if [ $ln2 != $ln ]; then
+        if [ $ln2 = 1 ]; then
+            DISPLAY=:0 notify-send 'RSS' '1 new entry in the RSS feed.'
+        else
+            DISPLAY=:0 notify-send 'RSS' "$ln2 new entries in the RSS feed."
+        fi
     fi
 }
 
