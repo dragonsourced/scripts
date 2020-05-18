@@ -15,7 +15,8 @@ update_rss() {
         if [ $ln2 = 1 ]; then
             DISPLAY=:0 notify-send 'RSS' '1 new entry in the RSS feed.'
         else
-            DISPLAY=:0 notify-send 'RSS' "$ln2 new entries in the RSS feed."
+            diff=$((ln2 - ln))
+            DISPLAY=:0 notify-send 'RSS' "$diff new entries in the RSS feed."
         fi
     fi
 }
