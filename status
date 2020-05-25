@@ -13,7 +13,7 @@ has_compositor() {
 
 # Colours/fonts.
 
-FONT="${FONT:-Charter:size=10}"
+FONT="${FONT:-$(theme get barfont)}"
 
 BG=$(theme get bg)
 FG=$(theme get fg)
