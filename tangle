@@ -1,0 +1,11 @@
+#!/bin/sh
+
+#
+# Extract the code from a Markdown document.
+#
+
+if [ "$2" ]; then
+	sed 's/^[^\t].*$//' $1 > $2
+else
+	sed 's/^[^\t].*$//' $1
+fi
