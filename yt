@@ -7,5 +7,5 @@ h=900
 if [ "$DISPLAY" ]; then
     mpv --ytdl-format "bestvideo[height<=?${H}]+bestaudio/best" --force-window=immediate --autofit=$h "$*" &
 else
-    mpv --vo=drm --ytdl-format "bestvideo[height<=?${H}]+bestaudio/best" --force-window=immediate --autofit=$h "$*"
+    mpv --vo=drm --autofit=$h "$*"
 fi
