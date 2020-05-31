@@ -2,7 +2,7 @@
 
 MAXAGE=86400 # Seconds in a day.
 TIME=$(date +%s)
-OLD=$(($(date +%s) - NEWTIME))
+OLD=$(($(date +%s) - MAXAGE))
 
 ARGS=
 
