@@ -4,8 +4,6 @@ MAXAGE=86400 # Seconds in a day.
 TIME=$(date +%s)
 OLD=$(($(date +%s) - NEWTIME))
 
-MAXNEW=5 # Assume no-one's going to post more than 5 new posts a day.
-
 ARGS=
 
 add_arg() {
