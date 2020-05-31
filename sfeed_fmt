@@ -1,7 +1,6 @@
 #!/bin/sh
 
 MAXAGE=86400 # Seconds in a day.
-TIME=$(date +%s)
 OLD=$(($(date +%s) - MAXAGE))
 
 ARGS=
