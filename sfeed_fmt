@@ -1,0 +1,39 @@
+#!/bin/sh
+
+MAXAGE=86400 # Seconds in a day.
+TIME=$(date +%s)
+OLD=$(($(date +%s) - NEWTIME))
+
+MAXNEW=5 # Assume no-one's going to post more than 5 new posts a day.
+
+ARGS=
+
+add_arg() {
+	ARGS="${ARGS} \$$1"
+}
+
+new_only() {
+	awk "\$1>$OLD"
+}
+
+while [ "$1" ]; do
+	case $1 in
+		new) NEW=1 ;;
+		timestamp) add_arg 1 ;;
+		title) add_arg 2 ;;
+		link) add_arg 3 ;;
+		content) add_arg 4 ;;
+		content-type) add_arg 5 ;;
+		id) add_arg 6 ;;
+		author) add_arg 7 ;;
+		enclosure) add_arg 8 ;;
+		*) echo "$1: unknown argument.";
+	esac
+	shift
+done
+
+if [ "$NEW" ]; then
+	new_only | awk -F'\t' "{ print ${ARGS}; }"
+else
+	awk -F'\t' "{ print ${ARGS}; }"
+fi
