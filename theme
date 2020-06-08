@@ -32,7 +32,7 @@ term() {
     (
         cd "$HOME/src/ui/st" || return
         make clean
-        make CFLAGS="-Ithemes/$THEME" install
+	make CFLAGS="-DTHEME='\"$THEME\"' -DFGCOLOR='\"#$($0 g fg)\"' -DBGCOLOR='\"#$($0 g bg)\"'" install
     )
 }
 
