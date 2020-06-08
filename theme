@@ -43,7 +43,8 @@ notifications() {
 }
 
 rofi() {
-    sed -i "s/rofi\\.theme:.*$/rofi.theme:         $THEME.rasi/" ~/.config/rofi/config
+	sed -i "s/normal-background: .*;$/normal-background: #$($0 g bg);/" ~/.config/rofi/theme.rasi
+	sed -i "s/normal-foreground: .*;$/normal-foreground: #$($0 g fg);/" ~/.config/rofi/theme.rasi
 }
 
 spotify() {
