@@ -11,35 +11,43 @@ THEMEFILE=/tmp/theme
 THEMEDIR=$HOME/src/ui/themes
 
 themes() {
-    cd ~/src/ui/themes || exit
-    for f in *; do
-        echo "$f"
-    done
+	cd ~/src/ui/themes || exit
+	for f in *; do
+		echo "$f"
+	done
 }
 
 statusbar() {
-    killall status
-    killall lemonbar
-    status "$THEME" &
+	killall status
+	killall lemonbar
+	status "$THEME" &
 }
 
 wallpaper() {
-    feh --bg-fill "$HOME/pics/wall/$THEME"
+	feh --bg-fill "$HOME/pics/wall/$THEME"
 }
 
 term() {
-    export BINDIR="$HOME/bin"
-    (
-        cd "$HOME/src/ui/st" || return
-        make clean
-	make CFLAGS="-DTHEME='\"$THEME\"' -DFGCOLOR='\"#$($0 g fg)\"' -DBGCOLOR='\"#$($0 g bg)\"'" install
-    )
+	export BINDIR="$HOME/bin"
+	(
+		cd "$HOME/src/ui/st" || return
+		make clean
+	make THEME="-DTHEME='\"$THEME\"' -DFGCOLOR='\"#$($0 g fg)\"' -DBGCOLOR='\"#$($0 g bg)\"'" install
+	)
+}
+
+dmenu() {
+	(
+		cd "$HOME/src/ui/dmenu" || return
+		make clean
+		make PREFIX="$HOME" THEME="-DTHEME='\"$THEME\"' -DFONT='\"$($0 g barfont)\"' -DFGCOLOR='\"#$($0 g fg)\"' -DBGCOLOR='\"#$($0 g bg)\"'" install
+	)
 }
 
 notifications() {
-    killall dunst
-    install -D "$HOME/src/ui/dunst/$THEME" ~/.config/dunst/dunstrc
-    dunst &
+	killall dunst
+	install -D "$HOME/src/ui/dunst/$THEME" ~/.config/dunst/dunstrc
+	dunst &
 }
 
 rofi() {
@@ -49,46 +57,53 @@ rofi() {
 }
 
 spotify() {
-    spicetify config current_theme "$THEME"
-    spicetify update
+	(
+		cd ~/.config/spicetify/Themes/theme/ || return
+		cp ~/.config/spicetify/Themes/color.ini color.ini
+		sed -i "s/FG/$($0 g fg)/" color.ini
+		sed -i "s/BG/$($0 g bg)/" color.ini
+	)
+	spicetify config current_theme theme
+	spicetify update
 }
 
 gtk_set() {
-    sed -i "s|^$1.*|$1 \"$2\"|" ~/.xsettingsd
+	sed -i "s|^$1.*|$1 \"$2\"|" ~/.xsettingsd
 }
 
 gtk() {
-    gtk_set Net/ThemeName     "$(theme get gtk)"
-    gtk_set Net/IconThemeName "$(theme get icon)"
-    gtk_set Gtk/FontName      "$(theme get font)"
+	gtk_set Net/ThemeName	 "$(theme get gtk)"
+	gtk_set Net/IconThemeName "$(theme get icon)"
+	gtk_set Gtk/FontName	  "$(theme get font)"
 
-    killall xsettingsd
-    xsettingsd &
+	killall xsettingsd
+	xsettingsd &
 }
 
 switchto() {
-    export THEME="$*"
-    echo "$THEME" > "$THEMEFILE"
-    term &
-    gtk
-    rofi
-    wallpaper
-    statusbar
-    notifications
-    spotify
+	export THEME="$*"
+	echo "$THEME" > "$THEMEFILE"
+	term &
+	dmenu &
+	gtk
+	rofi
+	wallpaper
+	statusbar
+	notifications
+	spotify
 }
 
 case $1 in
-    s|set) [ -f "$THEMEDIR/$2" ] && switchto "$2" ;;
-    m|menu)
-        opt=$(themes | menu)
-        [ "$opt" ] && $0 set "$opt" ;;
-    l|list) themes ;;
-    "")    cat "$THEMEFILE" ;;
-    g|get) grep "^$2" "$THEMEDIR/$($0)" | awk '{ $1=""; print $0 }' | xargs ;;
-    *)
-        echo "Usage: $0 <theme>"
-        echo "       $0 list"
-        echo "       $0 menu"
-        ;;
+	s|set) [ -f "$THEMEDIR/$2" ] && switchto "$2" ;;
+	m|menu)
+		opt=$(themes | menu)
+		[ "$opt" ] && $0 set "$opt" ;;
+	l|list) themes ;;
+	"")	cat "$THEMEFILE" ;;
+	g|get) grep "^$2" "$THEMEDIR/$($0)" | awk '{ $1=""; print $0 }' | xargs ;;
+	*)
+		echo "Usage: $0 <theme>"
+		echo "	   $0 list"
+		echo "	   $0 menu"
+		;;
 esac
