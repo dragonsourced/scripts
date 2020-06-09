@@ -62,6 +62,7 @@ spotify() {
 		cp ~/.config/spicetify/Themes/color.ini color.ini
 		sed -i "s/FG/$($0 g fg)/" color.ini
 		sed -i "s/BG/$($0 g bg)/" color.ini
+		sed -i "s/font-family: .*;$/font-family: \"$($0 g font | awk '{print $1}')\";/" user.css
 	)
 	spicetify config current_theme theme
 	spicetify update
