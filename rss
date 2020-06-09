@@ -39,21 +39,13 @@ pager() {
 }
 
 new_of() {
-    sfeed_fmt new < "$*" | wc -l
-}
-
-new_in() {
-    if [ -f "$*" ]; then
-        new_of "$*"
-    elif [ -d "$*" ]; then
-        find "$*" -type f -exec head '{}' \; | sfeed_fmt new | wc -l
-    fi
+    find "$*" -type f -exec head '{}' \; | sfeed_fmt new | wc -l
 }
 
 feeds() {
     for f in *; do
         [ -d "$f" ] && f="$f"
-        n=$(new_in "$f")
+        n=$(new_of "$f")
         if [ "$n" -gt 0 ]; then
             echo "$f ($n new)"
         elif [ "$showold" ]; then
