@@ -1,0 +1,42 @@
+#!/bin/sh
+#
+# A hacky little shell script to yank files from the SCP
+# foundation's servers, clean them up a little, and dump
+# them into a text file with lynx(1) before viewing them.
+#
+
+SCPD=~/docs/scp
+
+_clean() {
+	hxselect '#page-content' |\
+	hxnormalize -x |\
+	hxremove .info-container |\
+	hxremove .page-rate-widget-box |\
+	hxremove .scp-image-block
+}
+
+_convert() {
+	lynx --stdin --dump
+}
+
+_process() {
+	_clean | _convert
+}
+
+_fetch() {
+	echo "SERVER LOOKUP FOR $(echo "$1" | tr '[:lower:]' '[:upper:]')..."
+	wget -q "http://scp-wiki.net/$1" -O- | _process > "$1"
+}
+
+_view() {
+	cd ${SCPD} || return 1
+	[ -f "$1" ] || _fetch "$1" || return 1
+	${PAGER:-less} "$1"
+}
+
+while [ "$1" ]; do
+	x="$1"
+	(echo "$x" | grep -q '^[0-9]*$') && x="scp-$x"
+	_view "$x" || echo "$x: SCP NOT FOUND"
+	shift
+done
