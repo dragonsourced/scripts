@@ -12,23 +12,19 @@ vol=$(amixer get Master | awk '/%/ { print $5 }' | tr -d '[]%' | uniq)
 bar=$(seq -s "─" "$((vol/3))" | tr -d '0-9')
 mute=$(amixer get 'Master' | awk '/%/ { print $6 }' | tr '[]' ' ' | uniq)
 
-icon=audio-volume-muted-blocking
 urgency=normal
 if [ "$mute" = "off" ]; then
-    icon=volume-level-muted
+	:
 elif [ "$vol" -lt "25" ]; then
-    icon=volume-level-low
     urgency=low
 elif [ "$vol" -lt "50" ]; then
-    icon=volume-level-medium
     urgency=normal
 else
-    icon=volume-level-high
     urgency=critical
 fi
 
 if command -v dunstify > /dev/null 2> /dev/null; then
-    dunstify -u "$urgency" -i "$icon" -r 1 -- "$bar"
+    dunstify -u "$urgency" -r 1 -- "$bar"
 else
-    notify-send -u "$urgency" -i "$icon" "Volume" -h "int:value:$vol"
+    notify-send -u "$urgency" "Volume" -h "int:value:$vol"
 fi
