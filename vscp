@@ -27,6 +27,7 @@ _process() {
 _fetch() {
 	echo "SERVER LOOKUP FOR $(echo "$1" | tr '[:lower:]' '[:upper:]')..."
 	wget -q "http://scp-wiki.net/$1" -O- | _process > "$1"
+	[ "$(cat "$1")" ] || rm "$1"
 }
 
 _view() {
