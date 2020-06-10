@@ -24,8 +24,12 @@ _process() {
 	_clean | _convert
 }
 
+_upper() {
+	echo "$*" | tr '[:lower:]' '[:upper:]'
+}
+
 _fetch() {
-	echo "SERVER LOOKUP FOR $(echo "$1" | tr '[:lower:]' '[:upper:]')..."
+	echo "SERVER LOOKUP FOR $(_upper "$1")..."
 	wget -q "http://scp-wiki.net/$1" -O- | _process > "$1"
 	[ "$(cat "$1")" ] || (rm "$1"; false)
 }
@@ -39,6 +43,6 @@ _view() {
 while [ "$1" ]; do
 	x="$1"
 	(echo "$x" | grep -q '^[0-9]*$') && x="scp-$x"
-	_view "$x" || echo "$x: SCP NOT FOUND"
+	_view "$x" || echo "$(_upper "$x"): SCP NOT FOUND"
 	shift
 done
