@@ -20,7 +20,7 @@ statusbar() {
 }
 
 wallpaper() {
-	feh --bg-fill "$HOME/pics/wall/$THEME"
+	feh --no-fehbg --bg-fill "$HOME/pics/wall/$THEME"
 }
 
 term() {
