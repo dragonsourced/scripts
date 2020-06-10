@@ -28,7 +28,7 @@ term() {
 	(
 		cd "$HOME/src/ui/st" || return
 		make clean
-	make THEME="-DTHEME='\"$THEME\"' -DFGCOLOR='\"#$FG\"' -DBGCOLOR='\"#$BG\"'" install
+	make THEME="-DTHEME='\"$THEME\"' -DFONT='\"$($0 g barfont)\"' -DFGCOLOR='\"#$FG\"' -DBGCOLOR='\"#$BG\"'" install
 	)
 }
 
