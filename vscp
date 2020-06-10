@@ -10,6 +10,7 @@ SCPD=~/docs/scp
 _clean() {
 	hxselect '#page-content' |\
 	hxnormalize -x |\
+	hxremove .footer-wikiwalk-nav |\
 	hxremove .info-container |\
 	hxremove .page-rate-widget-box |\
 	hxremove .scp-image-block
