@@ -5,6 +5,8 @@
 # them into a text file with lynx(1) before viewing them.
 #
 
+SITE=http://scp-wiki.net
+LANG=en
 SCPD=~/docs/scp
 
 _clean() {
@@ -30,19 +32,29 @@ _upper() {
 
 _fetch() {
 	echo "SERVER LOOKUP FOR $(_upper "$1")..."
-	wget -q "http://scp-wiki.net/$1" -O- | _process > "$1"
-	[ "$(cat "$1")" ] || (rm "$1"; false)
+	mkdir -p ${LANG}
+	wget -q "${SITE}/$1" -O- | _process > "${LANG}/$1"
+	[ "$(cat "${LANG}/$1")" ] || (rm "${LANG}/$1"; false)
 }
 
 _view() {
 	cd ${SCPD} || return 1
-	[ -f "$1" ] || _fetch "$1" || return 1
-	${PAGER:-less} "$1"
+	[ -f "${LANG}/$1" ] || _fetch "$1" || return 1
+	${PAGER:-less -rf} "${LANG}/$1"
 }
 
 while [ "$1" ]; do
 	x="$1"
-	(echo "$x" | grep -q '^[0-9]*$') && x="scp-$x"
-	_view "$x" || echo "$(_upper "$x"): SCP NOT FOUND"
+	case $x in
+		en|english)
+			LANG=en
+			SITE=http://scp-wiki.net ;;
+		fr|french|francais)
+			LANG=fr
+			SITE=http://fondationscp.wikidot.com ;;
+		*)
+			(echo "$x" | grep -q '^[0-9]*$') && x="scp-$x"
+			_view "$x" || echo "$(_upper "$x"): SCP NOT FOUND" ;;
+	esac
 	shift
 done
