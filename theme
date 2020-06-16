@@ -23,13 +23,11 @@ wallpaper() {
 	feh --no-fehbg --bg-fill "$HOME/pics/wall/$THEME"
 }
 
-term() {
-	export BINDIR="$HOME/bin"
-	(
-		cd "$HOME/src/ui/st" || return
-		make clean
-	make THEME="-DTHEME='\"$THEME\"' -DFONT='\"$($0 g termfont)\"' -DFGCOLOR='\"#$FG\"' -DBGCOLOR='\"#$BG\"'" install
-	)
+xresources() {
+	sed -i "s/background: .*$/background: #$($0 g bg)/" ~/.Xresources
+	sed -i "s/foreground: .*$/foreground: #$($0 g fg)/" ~/.Xresources
+	sed -i "s/faceName: .*$/faceName: $($0 g termfont)/" ~/.Xresources
+	xrdb -merge ~/.Xresources
 }
 
 dmenu() {
@@ -92,7 +90,7 @@ switchto() {
 	FG="$($0 g fg)"
 	BG="$($0 g bg)"
 
-	term &
+	xresources &
 	dmenu &
 	rofi &
 	cwm &
