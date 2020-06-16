@@ -1,0 +1,9 @@
+#!/bin/sh
+
+while [ "$1" ]; do
+	case $1 in
+		*.sh) shellcheck $1 ;;
+		*.c) splint -weak +posixlib $1 ;;
+	esac
+	shift
+done
