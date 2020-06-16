@@ -1,9 +1,19 @@
 #!/bin/sh
 
+_sh() {
+	shellcheck $1
+}
+
+_c() {
+	splint -weak +posixlib $1 
+}
+
 while [ "$1" ]; do
 	case $1 in
-		*.sh) shellcheck $1 ;;
-		*.c) splint -weak +posixlib $1 ;;
+		*.sh) _sh $1 ;;
+		*.c) _c ;;
+		*.*) ;;
+		*) _sh $1 ;;
 	esac
 	shift
 done
