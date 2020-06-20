@@ -16,6 +16,7 @@ while [ "$1" ]; do
 	case $1 in
 		*.sh) _sh "$1" ;;
 		*.c) _c "$1" ;;
+		*.lua) luacheck "$1" ;;
 		*.*) _err "no default linter for $1";;
 		*) _sh "$1" ;;
 	esac
