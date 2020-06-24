@@ -1,6 +1,7 @@
 #!/bin/sh
 
 fmt ${TODO:-~/TODO} | sed\
+	-e 's/LONG-TERM/\x1b[1mLONG-TERM\x1b[0m/'\
 	-e 's/COMPLETE/\x1b[32;1mCOMPLETE\x1b[0m/'\
 	-e 's/PENDING/\x1b[31;1mPENDING\x1b[0m/'\
 	-e 's/current/\x1b[31mcurrent\x1b[0m/'
