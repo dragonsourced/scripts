@@ -5,7 +5,7 @@ _sh() {
 }
 
 _c() {
-	splint -weak +posixlib "$1"
+	cppcheck "$1"
 }
 
 _err() {
