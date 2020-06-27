@@ -56,6 +56,7 @@ cwm() {
 	sed -i "s/^color font.*$/color font '#$FG'/" ~/.cwmrc
 	sed -i "s/^color menufg.*$/color menufg '#$FG'/" ~/.cwmrc
 	sed -i "s/^color selfont.*$/color selfont '#$BG'/" ~/.cwmrc
+	sed -i "s/fontname .*$/fontname \"$($0 g barfont)\";/" ~/.cwmrc
 	pgrep cwm && pkill -SIGHUP cwm
 }
 
