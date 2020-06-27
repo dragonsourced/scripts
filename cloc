@@ -9,7 +9,7 @@ _out() {
 # A seperator between sections.
 
 _sep() {
-	echo ================================
+	echo
 }
 
 # Specific cleanup procedures for different filetypes.
@@ -47,7 +47,9 @@ _clean() {
 # Turn cleaned source code into numerical information.
 
 _count() {
-	wc -cl
+	cat > /tmp/cloc
+	(wc -c < /tmp/cloc; wc -l < /tmp/cloc) | sed 's/$/\t\t/g' | tr -d '\n'
+	rm /tmp/cloc
 }
 
 # LOC for a file.
@@ -82,7 +84,7 @@ fi
 
 while [ "$1" ]; do
 	[ -d "$1" ] && (
-		echo 'FILE               BYTES   LINES'
+		echo 'FILE             BYTES		LINES'
 		_sep
 		_dir "$1"
 	)
