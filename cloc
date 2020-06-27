@@ -38,13 +38,13 @@ _lua() {
 _clean() {
 	while [ "$1" ]; do
 		case $1 in
-			*.c|*.h) _c < $1 ;;
-			*.sh) _sh < $1 ;;
-			*.py) _py < $1 ;;
-			*.lua) _lua < $1 ;;
-			*.*) cat < $1 ;; # Not a known extension, so do nothing.
-			*) _sh < $1 ;; # Hopefully a shell script.
-		esac
+			*.c|*.h) _c ;;
+			*.sh) _sh ;;
+			*.py) _py ;;
+			*.lua) _lua ;;
+			*.*) cat ;; # Not a known extension, so do nothing.
+			*) _sh ;; # Hopefully a shell script.
+		esac < $1
 		shift
 	done | grep -v '^$'
 }
