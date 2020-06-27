@@ -117,9 +117,7 @@ view_entry() {
         "$OPT_WWW") sensible-browser "$link" ;;
         "$OPT_CPY") echo "$link" | xsel -b ;;
         "$OPT_DSC")
-            echo "$fulldesc" | fmt > /tmp/rss.desc
-            pager /tmp/rss.desc
-            rm /tmp/rss.desc
+            echo "$fulldesc" | fmt | uniq | pager
             view_entry "$@"
             return 0 ;;
         "$OPT_TTL")
