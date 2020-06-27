@@ -37,7 +37,7 @@ _clean() {
 			*.c|*.h) _c < $1 ;;
 			*.sh) _sh < $1 ;;
 			*.py) _py < $1 ;;
-			*.*) ;; # Not a known extension, so do nothing.
+			*.*) cat < $1 ;; # Not a known extension, so do nothing.
 			*) _sh < $1 ;; # Hopefully a shell script.
 		esac
 		shift
