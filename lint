@@ -12,7 +12,14 @@ _err() {
 	echo "$0: $*" > /dev/stderr
 }
 
+_recurse() {
+	for f in $(find "$1" -type f | sed 's/^\.\///' | grep -v .git); do
+		lint "$f"
+	done
+}
+
 while [ "$1" ]; do
+	[ -d "$1" ] && (_recurse "$1"; shift)
 	case $1 in
 		*.sh) _sh "$1" ;;
 		*.c) _c "$1" ;;
