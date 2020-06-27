@@ -28,6 +28,10 @@ _py() {
 	# docstrings, but I'll find out at some point.
 }
 
+_lua() {
+	grep -v '^[ 	]*--'
+}
+
 # Clean output of comments, blank lines, etc., using the
 # procedures defined above.
 
@@ -37,6 +41,7 @@ _clean() {
 			*.c|*.h) _c < $1 ;;
 			*.sh) _sh < $1 ;;
 			*.py) _py < $1 ;;
+			*.lua) _lua < $1 ;;
 			*.*) cat < $1 ;; # Not a known extension, so do nothing.
 			*) _sh < $1 ;; # Hopefully a shell script.
 		esac
