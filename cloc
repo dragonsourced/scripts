@@ -47,7 +47,7 @@ _clean() {
 # Turn cleaned source code into numerical information.
 
 _count() {
-	wc -lc
+	wc -cl
 }
 
 # LOC for a file.
@@ -82,7 +82,7 @@ fi
 
 while [ "$1" ]; do
 	[ -d "$1" ] && (
-		echo 'FILE               LINES   BYTES'
+		echo 'FILE               BYTES   LINES'
 		_sep
 		_dir "$1"
 	)
