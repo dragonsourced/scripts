@@ -31,7 +31,7 @@ done
 
 pager() {
     if [ "$DISPLAY" ]; then
-        st -e sensible-pager "$@"
+        xterm -e sensible-pager "$@"
     else
         clear
         ${PAGER:-less} "$@"
