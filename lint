@@ -8,6 +8,10 @@ _c() {
 	cppcheck "$1"
 }
 
+_cpp() {
+	cppcheck "$1"
+}
+
 _err() {
 	echo "$0: $*" > /dev/stderr
 }
@@ -23,6 +27,7 @@ while [ "$1" ]; do
 	case $1 in
 		*.sh) _sh "$1" ;;
 		*.c|*.h) _c "$1" ;;
+		*.cc|*.cpp|*.hpp) _cpp "$1" ;;
 		*.lua) luacheck "$1" ;;
 		*.*) _err "no default linter for $1";;
 		*) _sh "$1" ;;
