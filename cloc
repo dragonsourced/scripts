@@ -71,7 +71,7 @@ _dir() {
 		$0 "$f"
 	done
 	_sep
-	_out TOTAL: "$(_clean ${src} | _count)"
+	_out TOTAL "$(_clean ${src} | _count)"
 }
 
 # If no arguments given, act on the current directory.
