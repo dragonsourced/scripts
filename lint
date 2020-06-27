@@ -25,16 +25,16 @@ _recurse() {
 while [ "$1" ]; do
 	[ -d "$1" ] && (_recurse "$1"; shift)
 	case $1 in
+		Makefile|makefile|GNUmakefile)
+		# I don't actually know a way to lint makefiles.
+		;;
+
 		*.sh) _sh "$1" ;;
 		*.c|*.h) _c "$1" ;;
 		*.cc|*.cpp|*.hpp) _cpp "$1" ;;
 		*.lua) luacheck "$1" ;;
 		*.*) _err "no default linter for $1";;
 		*) _sh "$1" ;;
-
-		Makefile|makefile|GNUmakefile)
-		# I don't actually know a way to lint makefiles.
-		;;
 	esac
 	shift
 done
