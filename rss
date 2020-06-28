@@ -88,10 +88,16 @@ _selfeed() {
 		__feed=$(_feeds | fzf --prompt 'RSS '\
 		    --reverse\
 		    --preview="$0 startin \"$PWD\" list {}")
+
 		[ "$__feed" ] || __feed=..
+
 		__feed="$(_clean_feed "$__feed")"
-		[ -d "$__feed" ] && cd "$__feed" || return
-		[ -f "$__feed" ] && _selentry "$__feed"
+
+		if [ -d "$__feed" ]; then
+			cd "$__feed" || return
+		elif [ -f "$__feed" ]; then
+			_selentry "$__feed"
+		fi
 	done
 }
 
