@@ -3,7 +3,7 @@
 RSSD=$HOME/.sfeed/feeds
 NEW_CACHE=${RSSD}/.new
 
-cd ${RSSD} || exit
+cd "${RSSD}" || exit
 
 # Simple menu wrapper.
 
@@ -43,15 +43,15 @@ _calc_new() {
 }
 
 _cache_new() { 
-	:> $NEW_CACHE
-	find ${RSSD} | while read -r __f; do
-		echo "$__f	$(_calc_new $__f)" >> $NEW_CACHE
+	:> "${NEW_CACHE}"
+	find "${RSSD}" | while read -r __f; do
+		echo "$__f	$(_calc_new "$__f")" >> "${NEW_CACHE}"
 	done
 }
 
 _new() {
-	[ -f $NEW_CACHE ] || _cache_new
-	__new2r=$(grep "^${PWD}/$*" < $NEW_CACHE | awk '{ print $2 }')
+	[ -f "${NEW_CACHE}" ] || _cache_new
+	__new2r=$(grep "^${PWD}/$*" < "${NEW_CACHE}" | awk '{ print $2 }')
 	if [ "$__new2r" ]; then
 		echo "$__new2r"
 	else
@@ -63,7 +63,7 @@ _new() {
 
 _show_feed() {
 	__new="$(_new "$*")"
-	if [ $__new -gt 0 ]; then
+	if [ "$__new" -gt 0 ]; then
 		echo "$(basename "$*") ($__new new)"
 	elif ! [ "$NEW_ONLY" ]; then
 		basename "$*"
@@ -76,7 +76,7 @@ _feeds() {
 	echo ..
 	find . -maxdepth 1 -mindepth 1 | while read -r __feed; do
 		_show_feed "$__feed"
-	done | grep -v "^$(basename $NEW_CACHE)"
+	done | grep -v "^$(basename "${NEW_CACHE}")"
 }
 
 # Select a feed.
@@ -88,7 +88,7 @@ _selfeed() {
 		    --preview="$0 startin \"$PWD\" list {}")
 		[ "$__feed" ] || __feed=..
 		__feed="$(_clean_feed "$__feed")"
-		[ -d "$__feed" ] && cd "$__feed"
+		[ -d "$__feed" ] && cd "$__feed" || return
 		[ -f "$__feed" ] && _selentry "$__feed"
 	done
 }
@@ -126,6 +126,7 @@ _show_entry() {
 # List all of the entries in a feed.
 
 _list_entries() {
+	# shellcheck disable=SC2094
 	sfeed_fmt title < "$*" | while read -r __list_entry; do
 		_show_entry "$__list_entry" "$*"
 	done
