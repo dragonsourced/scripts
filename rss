@@ -239,14 +239,25 @@ OPT_DESC="View description."
 OPT_WWW="Open in a web browser."
 OPT_CPY="Copy link to clipboard."
 
+# Check if the given link is a video.
+
+_is_vid() {
+	echo "$*" | sfeed_fmt link | grep -q\
+	-e 'youtube.com/watch?v='\
+	-e 'youtube.be/watch?v='
+}
+
+# Check if the given link is playable audio.
+
+_is_aud() {
+	echo "$*" | sfeed_fmt enclosure | egrep -q '\.(mp3|mp4|m4a|wav|webm)'
+}
+
 _opts() {
-	echo "$*" | sfeed_fmt link > /tmp/rss.link
-	if egrep -q 'youtu(be\.com|\.be)/(/v/.*|watch[/]?v=)' /tmp/rss.link
-	then
+	if _is_vid "$*"; then
 		echo "$OPT_VID"
 	fi
-	rm /tmp/rss.link
-	if egrep -q '\.(mp3|mp4|m4a|wav|webm)' /tmp/rss.link; then
+	if _is_aud "$*" || _is_link "$*"; then
 		echo "$OPT_AUD"
 	fi
 	echo "$OPT_DESC"
@@ -263,6 +274,7 @@ _selopt() {
 	__entry="$(_fmt_entry "$*")"
 	__title="$(echo "$__entry" | sfeed_fmt title)"
 	__link="$(echo "$__entry" | sfeed_fmt link)"
+	__enc="$(echo "$__entry" | sfeed_fmt enclosure | cut -d' ' -f1)"
 	__opt="$(_opts "$__entry" | fzf\
 	    --reverse\
 	    --prompt="$__title "\
@@ -273,7 +285,8 @@ _selopt() {
 			vid "$__link" > /dev/null 2> /dev/null
 			;;
 		"$OPT_AUD")
-			vid "$__link" > /dev/null 2> /dev/null
+			clear
+			mpv --no-video "$__enc"
 			;;
 		"$OPT_TITLE")
 			clear
