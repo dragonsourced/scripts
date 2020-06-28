@@ -22,6 +22,16 @@ _pager() {
 	sensible-pager
 }
 
+# Open links in a web browser.
+
+_www() {
+	if [ "$DISPLAY" ]; then
+		x-www-browser "$@"
+	else
+		lynx "$@"
+	fi
+}
+
 # Escape a string so it doesn't mess up my regexes.
 
 _esc() {
@@ -222,6 +232,7 @@ _opts() {
 _selopt() {
 	__entry="$(_fmt_entry "$*")"
 	__title="$(echo "$__entry" | sfeed_fmt title)"
+	__link="$(echo "$__entry" | sfeed_fmt link)"
 	__opt="$(_opts "$__entry" | fzf\
 	    --reverse\
 	    --prompt="$__title "\
@@ -229,12 +240,16 @@ _selopt() {
 
 	case $__opt in
 		"$OPT_VID") ;;
-		"$OPT_TITLE") echo "$__title" | _pager ;;
+		"$OPT_TITLE")
+			clear
+			echo "$__title" | _pager ;;
 		"$OPT_DESC")
 			clear
 			_desc "$__entry" | _pager
 			;;
-		"$OPT_WWW") ;;
+		"$OPT_WWW")
+			_www "$__link"
+			;;
 		"$OPT_LINK") ;;
 		*) return ;;
 	esac
