@@ -7,7 +7,7 @@ escape() {
 while [ "$1" ]; do
     case $1 in
         -p|--prompt)
-            p="-p \"$(escape "$2")\""
+            p="$2"
             shift 2 ;;
         -m|--mesg)
             m="-mesg \"$(escape "$2")\""
@@ -24,7 +24,7 @@ menu() {
 }
 
 if [ "$DISPLAY" ]; then
-    eval "rofi -dmenu $p $m $i"
+    eval "rofi -dmenu -p '$(escape "$p")' $m $i"
 else
-    fzf --layout=reverse
+    fzf --layout=reverse --prompt="$p "
 fi
