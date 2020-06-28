@@ -13,7 +13,9 @@ _menu() {
 
 # Pager wrapper.
 
-_pager() sensible-pager
+_pager() {
+	sensible-pager
+}
 
 # Escape a string so it doesn't mess up my regexes.
 
