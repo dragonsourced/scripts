@@ -98,7 +98,6 @@ _feeds() {
 	find . -maxdepth 1 -mindepth 1 | while read -r __feed; do
 		_show_feed "$__feed"
 	done | grep -v '^\.'
-	echo ..
 }
 
 # Select a feed.
@@ -294,9 +293,12 @@ if [ "$1" ]; then
 				shift
 				;;
 			l|list)
-				[ -f "$2" ]\
-				    && _list_entries "$2"\
-				    | sed ${LINES:-24}q
+				if [ -f "$2" ]; then
+					_list_entries "$2"
+				elif [ -d "$2" ]; then
+					cd "$2" || return
+					_feeds
+				fi | sed ${LINES:-24}q
 				shift
 				;;
 			n|new)
