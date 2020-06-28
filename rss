@@ -1,7 +1,9 @@
 #!/bin/sh
 
-RSSD=$HOME/.sfeed/feeds
+SSD=$HOME/.sfeed/feeds
 NEW_CACHE=${RSSD}/.new
+
+NEW_IND='(new) '
 
 cd "${RSSD}" || exit
 
@@ -142,7 +144,7 @@ _is_new() {
 
 _show_entry() {
 	if _is_new "$3" "$2"; then
-		echo "(new) $1"
+		echo "${NEW_IND} $1"
 	else
 		echo "$1"
 	fi
@@ -160,10 +162,10 @@ _list_entries() {
 }
 
 # Clean an entry title of superfluous formatting,
-# such as the (new) indicator.
+# such as $NEW_IND.
 
 _clean_entry() {
-	echo "$*" | sed 's/^(new) //'
+	echo "$*" | sed "s/^$NEW_IND //"
 }
 
 # Same, but for feeds.
