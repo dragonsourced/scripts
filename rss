@@ -81,7 +81,6 @@ _abs() {
 _new() {
 	[ -f "${NEW_CACHE}" ] || _cache_new
 	__new2r=$(grep "^$(_abs "$*")" "${NEW_CACHE}" | sed 1q | cut -d'	' -f2)
-	echo "new: $__new2r" >> ~/TMP
 	if [ "$__new2r" ]; then
 		# converts possible erroneous strings
 		echo "$((__new2r + 0))"
@@ -329,10 +328,11 @@ if [ "$1" ]; then
 				shift
 				;;
 			l|list)
-				if [ -f "$2" ]; then
-					_list_entries "$2"
-				elif [ -d "$2" ]; then
-					cd "$2" || return
+				__to_list="$(_clean_feed "$2")"
+				if [ -f "$__to_list" ]; then
+					_list_entries "$__to_list"
+				elif [ -d "$__to_list" ]; then
+					cd "$__to_list" || return
 					_feeds
 				fi | sed ${LINES:-24}q
 				shift
