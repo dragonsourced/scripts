@@ -209,8 +209,8 @@ OPT_LINK="Copy link to clipboard."
 
 _opts() {
 	echo "$OPT_VID"
-	echo "$OPT_TITLE"
 	echo "$OPT_DESC"
+	echo "$OPT_TITLE"
 	echo "$OPT_WWW"
 	echo "$OPT_LINK"
 	echo ".."
