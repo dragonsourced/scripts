@@ -5,6 +5,8 @@ NEW_CACHE=${RSSD}/.new
 
 cd "${RSSD}" || exit
 
+[ "$DISPLAY" ] && transset --id "${WINDOWID}" "$(theme g termopacity")"
+
 # Simple menu wrapper.
 
 _menu() {
