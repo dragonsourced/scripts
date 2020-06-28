@@ -241,7 +241,8 @@ OPT_CPY="Copy link to clipboard."
 
 _opts() {
 	echo "$*" | sfeed_fmt link > /tmp/rss.link
-	if egrep -q 'youtu(be\.com|\.be)/(/v/.*|watch[/]?v=)'; then
+	if egrep -q 'youtu(be\.com|\.be)/(/v/.*|watch[/]?v=)' /tmp/rss.link
+	then
 		echo "$OPT_VID"
 	fi
 	rm /tmp/rss.link
@@ -285,6 +286,7 @@ _selopt() {
 			_www "$__link"
 			;;
 		"$OPT_CPY")
+			echo "$__link" | xsel
 			echo "$__link" | xsel -b
 			;;
 		*) return ;;
