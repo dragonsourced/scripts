@@ -214,14 +214,14 @@ OPT_VID="Play video."
 OPT_TITLE="View full title."
 OPT_DESC="View description."
 OPT_WWW="Open in a web browser."
-OPT_LINK="Copy link to clipboard."
+OPT_CPY="Copy link to clipboard."
 
 _opts() {
 	echo "$OPT_VID"
 	echo "$OPT_DESC"
 	echo "$OPT_TITLE"
 	echo "$OPT_WWW"
-	echo "$OPT_LINK"
+	echo "$OPT_CPY"
 	echo ".."
 }
 
