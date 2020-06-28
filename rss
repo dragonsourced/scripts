@@ -3,7 +3,7 @@
 RSSD=$HOME/.sfeed/feeds
 NEW_CACHE=${RSSD}/.new
 
-NEW_IND='[33;1mN[0m'
+NEW_IND='N'
 OLD_IND=' '
 
 cd "${RSSD}" || exit
@@ -70,9 +70,18 @@ _cache_new() {
 	done
 }
 
+# Convert a local filename into an absolute one.
+
+_abs() {
+	realpath "$*"
+}
+
+# Return the # of new entries in a feed or directory.
+
 _new() {
 	[ -f "${NEW_CACHE}" ] || _cache_new
-	__new2r=$(grep "^${PWD}/$*" < "${NEW_CACHE}" | cut -d'	' -f2)
+	__new2r=$(grep "^$(_abs "$*")" "${NEW_CACHE}" | sed 1q | cut -d'	' -f2)
+	echo "new: $__new2r" >> ~/TMP
 	if [ "$__new2r" ]; then
 		# converts possible erroneous strings
 		echo "$((__new2r + 0))"
@@ -84,7 +93,7 @@ _new() {
 # Display a feed or directory, when applicable.
 
 _show_feed() {
-	__new="$(_new "$*")"
+	__new="$(_new "$(_abs "$*")")"
 	if [ "$__new" -gt 0 ]; then
 		echo "$(basename "$*") ($__new new)"
 	elif ! [ "$NEW_ONLY" ]; then
