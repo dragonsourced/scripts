@@ -115,7 +115,7 @@ _entry_regx() {
 # Args: title, feed
 
 _find_entry() {
-	grep "$(_entry_regx "$1")" < "$2"
+	grep "$(_entry_regx "$1")" < "$2" | sed 1q
 }
 
 # Entries seem to wind up across multiple lines,
