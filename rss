@@ -189,7 +189,7 @@ _selentry() {
 		    --preview="$0 startin \"$PWD\" preview {} \"$__feed\"")
 		[ "$__entry" ] || break
 		__entry="$(_clean_entry "$__entry")"
-		_selopt "$(_find_entry "$__entry" "$__feed")"
+		_selopt "$(_find_entry "$__entry" "$__feed")" "$__feed"
 	done
 }
 
@@ -211,11 +211,15 @@ _opts() {
 }
 
 # Select an option to interact with an entry.
+# Args: entry, feed
 
 _selopt() {
 	__entry="$(_fmt_entry "$*")"
 	__title="$(echo "$__entry" | sfeed_fmt title)"
-	__opt=$(_opts "$__entry" | _menu "$__title ")
+	__opt="$(_opts "$__entry" | fzf\
+	    --reverse\
+	    --prompt="$__title "\
+	    --preview="$0 startin \"$PWD\" Preview \"$__entry\"")"
 
 	case $__opt in
 		"$OPT_VID") ;;
@@ -242,6 +246,16 @@ _preview_entry() {
 		| sed ${LINES:-24}q
 }
 
+# Same as _preview_entry(), but the entry's already been found.
+# Args: entry
+
+_Preview_entry() {
+	echo "$*"\
+		| sfeed_fmt content\
+		| lynx -dump -stdin -width=${COLUMNS}\
+		| sed ${LINES:-24}q
+}
+
 if [ "$1" ]; then
 	while [ "$1" ]; do
 		case $1 in
@@ -252,6 +266,10 @@ if [ "$1" ]; then
 			p|preview)
 				_preview_entry "$(_clean_entry "$2")" "$3"
 				shift
+				shift
+				;;
+			P|Preview)
+				_Preview_entry "$2"
 				shift
 				;;
 			l|list)
