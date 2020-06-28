@@ -281,7 +281,7 @@ _Preview_entry() {
 if [ "$1" ]; then
 	while [ "$1" ]; do
 		case $1 in
-			startin)
+			s|startin)
 				cd "$2" || exit
 				shift
 				;;
