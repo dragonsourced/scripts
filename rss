@@ -3,7 +3,7 @@
 RSSD=$HOME/.sfeed/feeds
 NEW_CACHE=${RSSD}/.new
 
-NEW_IND='N'
+NEW_IND='[1;33mN[0m'
 OLD_IND=' '
 
 cd "${RSSD}" || exit
