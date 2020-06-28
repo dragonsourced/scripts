@@ -128,7 +128,7 @@ _desc() {
 # Args: entry title, feed
 
 _show_entry() {
-	echo "$1 (new)" # TODO: add (new) indicator
+	echo "(new) $1" # TODO: add (new) indicator
 }
 
 # List all of the entries in a feed.
@@ -144,7 +144,7 @@ _list_entries() {
 # such as the (new) indicator.
 
 _clean_entry() {
-	echo "$*" | sed 's/ (new)$//'
+	echo "$*" | sed 's/^(new) //'
 }
 
 # Same, but for feeds.
