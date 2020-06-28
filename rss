@@ -274,7 +274,7 @@ _selopt() {
 			_www "$__link"
 			;;
 		"$OPT_CPY")
-			echo "$__link" | xsel -bc
+			echo "$__link" | xsel -b
 			;;
 		*) return ;;
 	esac
