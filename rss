@@ -101,11 +101,17 @@ _selfeed() {
 	done
 }
 
+# The string to grep for to find an entry in a feed.
+
+_entry_regx() {
+	echo "	$(_esc "$*")	"
+}
+
 # Find an entry from its title.
 # Args: title, feed
 
 _find_entry() {
-	grep "	$(_esc "$1")	" < "$2"
+	grep "$(_entry_regx "$1")" < "$2"
 }
 
 # Entries seem to wind up across multiple lines,
@@ -124,19 +130,32 @@ _desc() {
 	    | lynx -dump -stdin
 }
 
+# Is the given entry a new one?
+# Args: line #, feed
+
+_is_new() {
+	[ "$1" -le 1 ] # "$(_new "$2")" ]
+}
+
 # Display an entry in a feed.
-# Args: entry title, feed
+# Args: entry title, feed, line #
 
 _show_entry() {
-	echo "(new) $1" # TODO: add (new) indicator
+	if _is_new "$3" "$2"; then
+		echo "(new) $1"
+	else
+		echo "$1"
+	fi
 }
 
 # List all of the entries in a feed.
 
 _list_entries() {
 	# shellcheck disable=SC2094
+	___line_nr=0
 	sfeed_fmt title < "$*" | while read -r __list_entry; do
-		_show_entry "$__list_entry" "$*"
+		___line_nr=$((___line_nr + 1))
+		_show_entry "$__list_entry" "$*" "$___line_nr"
 	done
 }
 
