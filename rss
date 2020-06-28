@@ -257,7 +257,7 @@ _opts() {
 	if _is_vid "$*"; then
 		echo "$OPT_VID"
 	fi
-	if _is_aud "$*" || _is_link "$*"; then
+	if _is_aud "$*" || _is_vid "$*"; then
 		echo "$OPT_AUD"
 	fi
 	echo "$OPT_DESC"
