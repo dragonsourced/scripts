@@ -1,9 +1,10 @@
 #!/bin/sh
 
-SSD=$HOME/.sfeed/feeds
+RSSD=$HOME/.sfeed/feeds
 NEW_CACHE=${RSSD}/.new
 
-NEW_IND='(new) '
+NEW_IND='[33;1mN[0m'
+OLD_IND=' '
 
 cd "${RSSD}" || exit
 
@@ -146,7 +147,7 @@ _show_entry() {
 	if _is_new "$3" "$2"; then
 		echo "${NEW_IND} $1"
 	else
-		echo "$1"
+		echo "${OLD_IND} $1"
 	fi
 }
 
@@ -165,7 +166,9 @@ _list_entries() {
 # such as $NEW_IND.
 
 _clean_entry() {
-	echo "$*" | sed "s/^$NEW_IND //"
+	echo "$*" | sed\
+	    -e "s/^$NEW_IND //"\
+	    -e "s/^$OLD_IND //"
 }
 
 # Same, but for feeds.
