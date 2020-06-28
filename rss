@@ -155,8 +155,8 @@ _show_entry() {
 # List all of the entries in a feed.
 
 _list_entries() {
-	# shellcheck disable=SC2094
 	___line_nr=0
+	# shellcheck disable=SC2094
 	sfeed_fmt title < "$*" | while read -r __list_entry; do
 		___line_nr=$((___line_nr + 1))
 		_show_entry "$__list_entry" "$*" "$___line_nr"
