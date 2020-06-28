@@ -249,7 +249,9 @@ _selopt() {
 		"$OPT_WWW")
 			_www "$__link"
 			;;
-		"$OPT_LINK") ;;
+		"$OPT_CPY")
+			echo "$__link" | xsel -bc
+			;;
 		*) return ;;
 	esac
 
