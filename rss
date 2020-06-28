@@ -28,6 +28,12 @@ _esc() {
     echo "$*" | sed -e 's/\[/\\[/g' -e 's/\]/\\]/g' -e 's/\*/\\*/g' -e 's/\./\\./g'
 }
 
+# Escape a single-quoted string.
+
+_esc_sq() {
+	echo "$*" # I haven't actually figured out how to do this yet.
+}
+
 # Update the RSS feeds.
 
 _update() {
@@ -219,7 +225,7 @@ _selopt() {
 	__opt="$(_opts "$__entry" | fzf\
 	    --reverse\
 	    --prompt="$__title "\
-	    --preview="$0 startin \"$PWD\" Preview \"$__entry\"")"
+	    --preview="$0 startin \"$PWD\" Preview '$(_esc_sq "$__entry")'")"
 
 	case $__opt in
 		"$OPT_VID") ;;
