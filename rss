@@ -233,13 +233,21 @@ _selentry() {
 # List available options for an entry.
 
 OPT_VID="Play video."
+OPT_AUD="Play audio."
 OPT_TITLE="View full title."
 OPT_DESC="View description."
 OPT_WWW="Open in a web browser."
 OPT_CPY="Copy link to clipboard."
 
 _opts() {
-	echo "$OPT_VID"
+	echo "$*" | sfeed_fmt link > /tmp/rss.link
+	if egrep -q 'youtu(be\.com|\.be)/(/v/.*|watch[/]?v=)'; then
+		echo "$OPT_VID"
+	fi
+	rm /tmp/rss.link
+	if egrep -q '\.(mp3|mp4|m4a|wav|webm)' /tmp/rss.link; then
+		echo "$OPT_AUD"
+	fi
 	echo "$OPT_DESC"
 	echo "$OPT_TITLE"
 	echo "$OPT_WWW"
@@ -261,6 +269,9 @@ _selopt() {
 
 	case $__opt in
 		"$OPT_VID")
+			vid "$__link" > /dev/null 2> /dev/null
+			;;
+		"$OPT_AUD")
 			vid "$__link" > /dev/null 2> /dev/null
 			;;
 		"$OPT_TITLE")
