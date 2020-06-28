@@ -75,10 +75,10 @@ _show_feed() {
 # Display all available feeds/directories.
 
 _feeds() {
-	echo ..
 	find . -maxdepth 1 -mindepth 1 | while read -r __feed; do
 		_show_feed "$__feed"
 	done | grep -v "^$(basename "${NEW_CACHE}")"
+	echo ..
 }
 
 # Select a feed.
