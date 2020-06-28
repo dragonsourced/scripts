@@ -278,9 +278,25 @@ _Preview_entry() {
 		| sed ${LINES:-24}q
 }
 
+# Update the RSS feeds, sending a notification if any new
+# entries show up.
+
+_update() {
+	__old_new="$(new "${RSSD}")"
+	sfeed_update
+	_cache_new
+	__new_new="$(new "${RSSD}")"
+	if [ "$__new_new" -gt "$__old_new" ]; then
+		notify-send RSS "$((new_new - old_new)) new entries."
+	fi
+}
+
 if [ "$1" ]; then
 	while [ "$1" ]; do
 		case $1 in
+			u|update)
+				_update
+				;;
 			s|startin)
 				cd "$2" || exit
 				shift
