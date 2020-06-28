@@ -238,7 +238,9 @@ _selopt() {
 	    --preview="$0 startin \"$PWD\" Preview '$(_esc_sq "$__entry")'")"
 
 	case $__opt in
-		"$OPT_VID") ;;
+		"$OPT_VID")
+			vid "$__link"
+			;;
 		"$OPT_TITLE")
 			clear
 			echo "$__title" | _pager ;;
