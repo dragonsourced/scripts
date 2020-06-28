@@ -168,8 +168,8 @@ _list_entries() {
 
 _clean_entry() {
 	echo "$*" | sed\
-	    -e "s/^$NEW_IND //"\
-	    -e "s/^$OLD_IND //"
+	    -e "s/^$(_esc "${NEW_IND}") //"\
+	    -e "s/^$(_esc "${OLD_IND}") //"
 }
 
 # Same, but for feeds.
