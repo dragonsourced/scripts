@@ -225,7 +225,7 @@ if [ "$1" ]; then
 				shift
 				;;
 			p|preview)
-				_preview_entry "$2" "$3"
+				_preview_entry "$(_clean_entry "$2")" "$3"
 				shift
 				shift
 				;;
