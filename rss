@@ -301,7 +301,7 @@ _update() {
 if [ "$1" ]; then
 	while [ "$1" ]; do
 		case $1 in
-			u|update)
+			u|up|update)
 				_update
 				;;
 			s|startin)
