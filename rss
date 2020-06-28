@@ -226,7 +226,7 @@ _opts() {
 }
 
 # Select an option to interact with an entry.
-# Args: entry, feed
+# Args: entry
 
 _selopt() {
 	__entry="$(_fmt_entry "$*")"
