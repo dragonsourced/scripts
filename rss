@@ -278,16 +278,23 @@ _Preview_entry() {
 		| sed ${LINES:-24}q
 }
 
+# Count the number of entries currently present.
+
+_count() {
+	# Assumes 1 entry per line.
+	find ${RSSD} -type f -exec cat {} \; | wc -l
+}
+
 # Update the RSS feeds, sending a notification if any new
 # entries show up.
 
 _update() {
-	__old_new="$(new "${RSSD}")"
+	__old="$(_count)"
 	sfeed_update
 	_cache_new
-	__new_new="$(new "${RSSD}")"
-	if [ "$__new_new" -gt "$__old_new" ]; then
-		notify-send RSS "$((new_new - old_new)) new entries."
+	__new="$(_count)"
+	if [ "$__new" -gt "$__old" ]; then
+		notify-send RSS "$((__new - __old)) new entries."
 	fi
 }
 
