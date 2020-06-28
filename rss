@@ -81,7 +81,7 @@ _show_feed() {
 _feeds() {
 	find . -maxdepth 1 -mindepth 1 | while read -r __feed; do
 		_show_feed "$__feed"
-	done | grep -v "^\."
+	done | grep -v '^\.'
 	echo ..
 }
 
