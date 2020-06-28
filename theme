@@ -109,7 +109,7 @@ case $1 in
 		[ "$opt" ] && $0 set "$opt" ;;
 	l|list) themes ;;
 	"")	cat "$THEMEFILE" ;;
-	g|get) grep "^$2" "$THEMEDIR/$($0)" | awk '{ $1=""; print $0 }' | xargs ;;
+	g|get) awk "/^$2/ { \$1=\"\"; print \$0 }" < "$THEMEDIR/$($0)" | xargs ;;
 	*)
 		echo "Usage: $0 <theme>"
 		echo "	   $0 list"
