@@ -58,7 +58,8 @@ _new() {
 	[ -f "${NEW_CACHE}" ] || _cache_new
 	__new2r=$(grep "^${PWD}/$*" < "${NEW_CACHE}" | awk '{ print $2 }')
 	if [ "$__new2r" ]; then
-		echo "$__new2r"
+		# converts possible erroneous strings
+		echo "$((__new2r + 0))"
 	else
 		echo 0
 	fi
