@@ -3,9 +3,9 @@
 RSSD=$HOME/.sfeed/feeds
 NEW_CACHE=${RSSD}/.new
 
-NEW_COLOR='[1;33m'
+NEW_COLOR='\033[1;33m'
 OLD_COLOR=''
-NUL_COLOR='[0m'
+NUL_COLOR='\033[0m'
 
 NEW_IND='N'
 OLD_IND=' '
@@ -172,10 +172,18 @@ _is_new() {
 # Args: entry title, feed, line #
 
 _show_entry() {
-	if _is_new "$3" "$2"; then
-		echo "${NEW_COLOR}${NEW_IND}${NUL_COLOR} $1"
+	if [ "$NOCOLOR" ]; then
+		if _is_new "$3" "$2"; then
+			echo "${NEW_IND} $1"
+		else
+			echo "${OLD_IND} $1"
+		fi
 	else
-		echo "${OLD_COLOR}${OLD_IND}${NUL_COLOR} $1"
+		if _is_new "$3" "$2"; then
+			echo "${NEW_COLOR}${NEW_IND}${NUL_COLOR} $1"
+		else
+			echo "${OLD_COLOR}${OLD_IND}${NUL_COLOR} $1"
+		fi
 	fi
 }
 
@@ -196,7 +204,9 @@ _list_entries() {
 _clean_entry() {
 	echo "$*" | sed\
 	    -e "s/^$(_esc "${NEW_IND}") //"\
-	    -e "s/^$(_esc "${OLD_IND}") //"
+	    -e "s/^$(_esc "${OLD_IND}") //"\
+	    -e "s/^$(_esc "${NEW_COLOR}${NEW_IND}${NUL_COLOR}") //"\
+	    -e "s/^$(_esc "${OLD_COLOR}${OLD_IND}${NUL_COLOR}") //"
 }
 
 # Same, but for feeds.
@@ -210,7 +220,7 @@ _clean_feed() {
 _selentry() {
 	__feed="$*"
 	while true; do
-		__entry=$(_list_entries "$__feed" | fzf\
+		__entry=$(NOCOLOR=1 _list_entries "$__feed" | fzf\
 		    --reverse\
 		    --prompt="$__feed "\
 		    --preview="$0 startin \"$PWD\" preview {} \"$__feed\"")
