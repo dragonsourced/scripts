@@ -188,7 +188,7 @@ _list_entries() {
 
 	___new_entries="$(_new "$*")"
 
-	if; [ "$___new_entries" -gt 0 ]; then
+	if [ "$___new_entries" -gt 0 ]; then
 		cat /tmp/rss.entries\
 		    | sed "$___new_entries"q\
 		    | while read -r __list_entry; do
