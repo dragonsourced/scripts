@@ -378,7 +378,8 @@ if [ "$1" ]; then
 				shift
 				;;
 			n|new)
-				NEW_ONLY=1 _selfeed
+				shift
+				NEW_ONLY=1 exec "$0" "$@"
 				;;
 		esac
 		shift
