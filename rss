@@ -187,21 +187,22 @@ _list_entries() {
 	sfeed_fmt title < "$*" > /tmp/rss.entries
 
 	___new_entries="$(_new "$*")"
-	___line_nr=0
 
-	[ "$___new_entries" -gt 0 ]\
-	    && cat /tmp/rss.entries\
-	    | sed "$___new_entries"q\
-	    | while read -r __list_entry; do
-		___line_nr=$((___line_nr + 1))
-		_show_new_entry "$__list_entry"
-	done
+	if; [ "$___new_entries" -gt 0 ]; then
+		cat /tmp/rss.entries\
+		    | sed "$___new_entries"q\
+		    | while read -r __list_entry; do
+			_show_new_entry "$__list_entry"
+		done
 
-	[ "$___new_entries" -gt 0 ] && sed -i "1,${___new_entries}"d /tmp/rss.entries
+		sed -i "1,${___new_entries}"d /tmp/rss.entries
+	fi
 
 	while read -r __list_entry; do
 		_show_old_entry "$__list_entry"
- 	done < /tmp/rss.entries
+	done < /tmp/rss.entries
+
+	rm /tmp/rss.entries
 }
 
 # Clean an entry title of superfluous formatting,
