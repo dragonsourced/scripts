@@ -161,41 +161,47 @@ _desc() {
 	    | lynx -dump -stdin
 }
 
-# Is the given entry a new one?
-# Args: line #, feed
+# Display a new entry in a feed.
 
-_is_new() {
-	[ "$1" -le "$(_new "$2")" ]
+_show_new_entry() {
+	if [ "$NOCOLOR" ]; then
+		echo "${NEW_IND} $*"
+	else
+		echo "${NEW_COLOR}${NEW_IND}${NUL_COLOR} $*"
+	fi
 }
 
-# Display an entry in a feed.
-# Args: entry title, feed, line #
+# Display an old entry in a feed.
 
-_show_entry() {
+_show_old_entry() {
 	if [ "$NOCOLOR" ]; then
-		if _is_new "$3" "$2"; then
-			echo "${NEW_IND} $1"
-		else
-			echo "${OLD_IND} $1"
-		fi
+		echo "${OLD_IND} $*"
 	else
-		if _is_new "$3" "$2"; then
-			echo "${NEW_COLOR}${NEW_IND}${NUL_COLOR} $1"
-		else
-			echo "${OLD_COLOR}${OLD_IND}${NUL_COLOR} $1"
-		fi
+		echo "${OLD_COLOR}${OLD_IND}${NUL_COLOR} $*"
 	fi
 }
 
 # List all of the entries in a feed.
 
 _list_entries() {
+	sfeed_fmt title < "$*" > /tmp/rss.entries
+
+	___new_entries="$(_new "$*")"
 	___line_nr=0
-	# shellcheck disable=SC2094
-	sfeed_fmt title < "$*" | while read -r __list_entry; do
+
+	[ "$___new_entries" -gt 0 ]\
+	    && cat /tmp/rss.entries\
+	    | sed "$___new_entries"q\
+	    | while read -r __list_entry; do
 		___line_nr=$((___line_nr + 1))
-		_show_entry "$__list_entry" "$*" "$___line_nr"
+		_show_new_entry "$__list_entry"
 	done
+
+	[ "$___new_entries" -gt 0 ] && sed -i "1,${___new_entries}"d /tmp/rss.entries
+
+	while read -r __list_entry; do
+		_show_old_entry "$__list_entry"
+ 	done < /tmp/rss.entries
 }
 
 # Clean an entry title of superfluous formatting,
