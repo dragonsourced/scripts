@@ -282,7 +282,7 @@ _selopt() {
 
 	case $__opt in
 		"$OPT_VID")
-			vid "$__link" > /dev/null 2> /dev/null
+			vid "$__link" > /dev/null 2> /dev/null &
 			;;
 		"$OPT_AUD")
 			clear
