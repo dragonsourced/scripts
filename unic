@@ -1,0 +1,4 @@
+#!/bin/sh
+
+_line=$(cat ${UNIC:-~/src/misc/unicode.txt} | menu)
+[ "$_line" ] && xdotool type "$(echo "$_line" | awk '{ print $1 }')"
