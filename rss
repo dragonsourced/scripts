@@ -150,7 +150,7 @@ _find_entry() {
 # \n's.  As such, I have to do this:
 
 _fmt_entry() {
-	echo "$*" | sed 's/$/ \n/' | tr -d '\n'
+	echo "$*" |  tr '\n' ' '
 }
 
 # Convert an entry into a formatted description.
@@ -319,9 +319,7 @@ _selopt() {
 # Args: title, feed
 
 _preview_entry() {
-	_fmt_entry "$(_find_entry "$1" "$2")"\
-		| sfeed_fmt content\
-		| lynx -dump -stdin -width=${COLUMNS}\
+	_desc "$(_fmt_entry "$(_find_entry "$1" "$2")")"\
 		| sed ${LINES:-24}q
 }
 
@@ -329,9 +327,7 @@ _preview_entry() {
 # Args: entry
 
 _Preview_entry() {
-	echo "$*"\
-		| sfeed_fmt content\
-		| lynx -dump -stdin -width=${COLUMNS}\
+	_desc "$*"\
 		| sed ${LINES:-24}q
 }
 
