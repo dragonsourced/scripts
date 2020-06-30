@@ -158,7 +158,7 @@ _fmt_entry() {
 _desc() {
 	echo "$*"\
 	    | sfeed_fmt content\
-	    | lynx -dump -stdin
+	    | lynx -dump -stdin -width="${COLUMNS:-80}"
 }
 
 # Display a new entry in a feed.
