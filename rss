@@ -271,7 +271,6 @@ _opts() {
 	echo "$OPT_TITLE"
 	echo "$OPT_WWW"
 	echo "$OPT_CPY"
-	echo ".."
 }
 
 # Select an option to interact with an entry.
