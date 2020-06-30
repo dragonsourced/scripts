@@ -1,4 +1,9 @@
 #!/bin/sh
 
 _line=$(cat ${UNIC:-~/src/misc/unicode.txt} | menu)
-[ "$_line" ] && xdotool type "$(echo "$_line" | awk '{ print $1 }')"
+if [ "$_line" ]; then
+	_char="$(echo "$_line" | awk '{ print $1 }')"
+	echo "$_char" | xsel
+	echo "$_char" | xsel -b
+	echo "$_char"
+fi
