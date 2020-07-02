@@ -6,31 +6,30 @@
 THEMEFILE=/tmp/theme
 THEMEDIR=$HOME/src/ui/themes
 
-themes() {
-	cd ~/src/ui/themes || exit
-	for f in *; do
-		echo "$f"
-	done
+_sedi() {
+	__f="$(mktemp)"
+	sed "$1" "$2" > "$__f"
+	mv "$__f" "$2"
 }
 
-statusbar() {
+_statusbar() {
 	killall status
 	killall lemonbar
 	status "$THEME" &
 }
 
-wallpaper() {
+_wallpaper() {
 	feh --no-fehbg --bg-fill "$HOME/pics/wall/$THEME"
 }
 
-xresources() {
-	sed -i "s/background: .*$/background: #$($0 g bg)/" ~/.Xresources
-	sed -i "s/foreground: .*$/foreground: #$($0 g fg)/" ~/.Xresources
-	sed -i "s/faceName: .*$/faceName: $($0 g termfont)/" ~/.Xresources
+_xresources() {
+	_sedi "s/background: .*$/background: #$($0 g bg)/" ~/.Xresources
+	_sedi "s/foreground: .*$/foreground: #$($0 g fg)/" ~/.Xresources
+	_sedi "s/faceName: .*$/faceName: $($0 g termfont)/" ~/.Xresources
 	xrdb -merge ~/.Xresources
 }
 
-dmenu() {
+_dmenu() {
 	(
 		cd "$HOME/src/ui/dmenu" || return
 		make clean
@@ -38,76 +37,83 @@ dmenu() {
 	)
 }
 
-notify() {
+_notify() {
 	killall dunst
-	sed -i "s/foreground = .*$/foreground = \"#$FG\"/" ~/.config/dunst/dunstrc
-	sed -i "s/background = .*$/background = \"#$BG\"/" ~/.config/dunst/dunstrc
+	_sedi "s/foreground = .*$/foreground = \"#$FG\"/" ~/.config/dunst/dunstrc
+	_sedi "s/background = .*$/background = \"#$BG\"/" ~/.config/dunst/dunstrc
 	dunst &
 }
 
-rofi() {
-	sed -i "s/normal-background: .*;$/normal-background: #$BG;/" ~/.config/rofi/theme.rasi
-	sed -i "s/normal-foreground: .*;$/normal-foreground: #$FG;/" ~/.config/rofi/theme.rasi
-	sed -i "s/font: .*;$/font: \"$($0 g font)\";/" ~/.config/rofi/theme.rasi
+_rofi() {
+	_sedi "s/normal-background: .*;$/normal-background: #$BG;/" ~/.config/rofi/theme.rasi
+	_sedi "s/normal-foreground: .*;$/normal-foreground: #$FG;/" ~/.config/rofi/theme.rasi
+	_sedi "s/font: .*;$/font: \"$($0 g font)\";/" ~/.config/rofi/theme.rasi
 }
 
-cwm() {
-	sed -i "s/^color menubg.*$/color menubg '#$BG'/" ~/.cwmrc
-	sed -i "s/^color font.*$/color font '#$FG'/" ~/.cwmrc
-	sed -i "s/^color menufg.*$/color menufg '#$FG'/" ~/.cwmrc
-	sed -i "s/^color selfont.*$/color selfont '#$BG'/" ~/.cwmrc
-	sed -i "s/fontname .*$/fontname \"$($0 g barfont)\"/" ~/.cwmrc
+_cwm() {
+	_sedi "s/^color menubg.*$/color menubg '#$BG'/" ~/.cwmrc
+	_sedi "s/^color font.*$/color font '#$FG'/" ~/.cwmrc
+	_sedi "s/^color menufg.*$/color menufg '#$FG'/" ~/.cwmrc
+	_sedi "s/^color selfont.*$/color selfont '#$BG'/" ~/.cwmrc
+	_sedi "s/fontname .*$/fontname \"$($0 g barfont)\"/" ~/.cwmrc
 	pgrep cwm && pkill -SIGHUP cwm
 }
 
-spotify() {
+_spotify() {
 	(
 		cd ~/.config/spicetify/Themes/theme/ || return
 		cp ~/.config/spicetify/Themes/color.ini color.ini
-		sed -i "s/FG/$FG/" color.ini
-		sed -i "s/BG/$BG/" color.ini
-		sed -i "s/font-family: .*;$/font-family: \"$($0 g font | awk '{print $1}')\";/" user.css
+		_sedi "s/FG/$FG/" color.ini
+		_sedi "s/BG/$BG/" color.ini
+		_sedi "s/font-family: .*;$/font-family: \"$($0 g font | awk '{print $1}')\";/" user.css
 	)
 	spicetify update
 }
 
-gtk_set() {
-	sed -i "s|^$1.*|$1 \"$2\"|" ~/.xsettingsd
+_gtk_set() {
+	_sedi "s|^$1.*|$1 \"$2\"|" ~/.xsettingsd
 }
 
-gtk() {
-	gtk_set Net/ThemeName	 "$(theme get gtk)"
-	gtk_set Net/IconThemeName "$(theme get icon)"
-	gtk_set Gtk/FontName	  "$(theme get font)"
+_gtk() {
+	_gtk_set Net/ThemeName	 "$(theme get gtk)"
+	_gtk_set Net/IconThemeName "$(theme get icon)"
+	_gtk_set Gtk/FontName	  "$(theme get font)"
 
 	killall xsettingsd
 	xsettingsd &
 }
 
-switchto() {
+_set() {
 	export THEME="$*"
 	echo "$THEME" > "$THEMEFILE"
 
 	FG="$($0 g fg)"
 	BG="$($0 g bg)"
 
-	xresources &
-	dmenu &
-	rofi &
-	cwm &
-	notify &
-	spotify &
-	gtk
-	wallpaper
-	statusbar
+	_xresources &
+	_dmenu &
+	_rofi &
+	_cwm &
+	_notify &
+	_spotify &
+	_gtk
+	_wallpaper
+	_statusbar
+}
+
+_list() {
+	cd ~/src/ui/themes || exit
+	for f in *; do
+		echo "$f"
+	done
 }
 
 case $1 in
-	s|set) [ -f "$THEMEDIR/$2" ] && switchto "$2" ;;
+	s|set) [ -f "$THEMEDIR/$2" ] && _set "$2" ;;
 	m|menu)
-		opt=$(themes | menu)
+		opt=$(_list | menu)
 		[ "$opt" ] && $0 set "$opt" ;;
-	l|list) themes ;;
+	l|list) _list ;;
 	"")	cat "$THEMEFILE" ;;
 	g|get) awk "/^$2/ { \$1=\"\"; print \$0 }" < "$THEMEDIR/$($0)" | xargs ;;
 	*)
