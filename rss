@@ -57,10 +57,9 @@ _calc_new() {
 }
 
 _cache_new() { 
-	:> "${NEW_CACHE}"
 	find "${RSSD}" | while read -r __f; do
-		echo "$__f	$(_calc_new "$__f")" >> "${NEW_CACHE}"
-	done
+		echo "$__f	$(_calc_new "$__f")"
+	done | grep -ve "${NEW_CACHE}" -e "${RSSD}	" > "${NEW_CACHE}"
 }
 
 # Convert a local filename into an absolute one.
@@ -335,8 +334,6 @@ _count() {
 
 _calc_new_diff() {
 	diff /tmp/rss.new "${NEW_CACHE}"\
-	    | grep -v 'feeds	'\
-	    | grep -v '\.new	'\
 	    | grep '^> '\
 	    | sed 's/^> //'\
 	    | cut -f1\
