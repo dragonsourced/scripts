@@ -178,8 +178,7 @@ _list_entries() {
 	___new_entries="$(_new "$*")"
 
 	if [ "$___new_entries" -gt 0 ]; then
-		cat /tmp/rss.entries\
-		    | sed "$___new_entries"q\
+		sed "$___new_entries"q /tmp/rss.entries\
 		    | while read -r __list_entry; do
 			_show_new_entry "$__list_entry"
 		done
@@ -246,7 +245,7 @@ _is_vid() {
 # Check if the given link is playable audio.
 
 _is_aud() {
-	echo "$*" | sfeed_fmt enclosure | egrep -q '\.(mp3|mp4|m4a|wav|webm)'
+	echo "$*" | sfeed_fmt enclosure | grep -Eq '\.(mp3|mp4|m4a|wav|webm)'
 }
 
 _opts() {
@@ -323,13 +322,13 @@ _Preview_entry() {
 
 _count() {
 	# Assumes 1 entry per line.
-	find ${RSSD} -type f -exec cat {} \; | wc -l
+	find "${RSSD}" -type f -exec cat {} \; | wc -l
 }
 
 # Output the feeds with new entries.
 
 _calc_new_diff() {
-	diff /tmp/rss.new ${NEW_CACHE}\
+	diff /tmp/rss.new "${NEW_CACHE}"\
 	    | grep -v 'feeds	'\
 	    | grep -v '\.new	'\
 	    | grep '^> '\
@@ -347,7 +346,7 @@ _calc_new_diff() {
 
 _update() {
 	_cache_new
-	cp ${NEW_CACHE} /tmp/rss.new
+	cp "${NEW_CACHE}" /tmp/rss.new
 	__old="$(_count)"
 	sfeed_update
 	_cache_new
