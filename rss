@@ -48,17 +48,6 @@ _esc_sq() {
 	echo "$*" | sed "s/'/'\"'\"'/g"
 }
 
-# Update the RSS feeds.
-
-_update() {
-	# Don't bother actually updating if there's
-	# no internet connection.
-	ping -c1 -t1 8.8.8.8 && sfeed_update
-
-	# Re-calculate the new entry cache.
-	_cache_new
-}
-
 # Calculate the # of new entries in a feed,
 # or # of new entries in the feeds within
 # a directory.
@@ -340,7 +329,7 @@ _count() {
 # Update the RSS feeds, sending a notification if any new
 # entries show up.
 
-_update() {
+_update() 
 	__old="$(_count)"
 	sfeed_update
 	_cache_new
