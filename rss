@@ -326,17 +326,36 @@ _count() {
 	find ${RSSD} -type f -exec cat {} \; | wc -l
 }
 
+# Output the feeds with new entries.
+
+_calc_new_diff() {
+	diff /tmp/rss.new ${NEW_CACHE}\
+	    | grep -v 'feeds	'\
+	    | grep -v '\.new	'\
+	    | grep '^> '\
+	    | sed 's/^> //'\
+	    | cut -f1\
+	    | while read -r __nf; do
+		basename "$__nf"
+	done\
+	    | sed 's/$/, /'\
+	    | tr -d '\n'
+}
+
 # Update the RSS feeds, sending a notification if any new
 # entries show up.
 
-_update() 
+_update() {
+	_cache_new
+	cp ${NEW_CACHE} /tmp/rss.new
 	__old="$(_count)"
 	sfeed_update
 	_cache_new
 	__new="$(_count)"
 	if [ "$__new" -gt "$__old" ]; then
-		notify-send RSS "$((__new - __old)) new entries."
+		notify-send RSS "$((__new - __old)) new entries in $(_calc_new_diff)"
 	fi
+	rm /tmp/rss.new
 }
 
 if [ "$1" ]; then
