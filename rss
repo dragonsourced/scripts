@@ -338,7 +338,7 @@ _calc_new_diff() {
 	    | sed 's/^> //'\
 	    | cut -f1\
 	    | while read -r __nf; do
-		basename "$__nf"
+		[ -f "$__nf" ] && basename "$__nf"
 	done\
 	    | sed 's/$/, /'\
 	    | tr -d '\n'
