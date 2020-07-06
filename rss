@@ -276,7 +276,7 @@ _selopt() {
 	__enc="$(echo "$__entry" | sfeed_fmt enclosure | cut -d' ' -f1)"
 	__opt="$(_opts "$__entry" | fzf\
 	    --reverse\
-	    --prompt="$(_fmt_prompt_title "$__title")"\
+	    --prompt="$(_fmt_prompt_title "$__title") "\
 	    --preview="$0 startin \"$PWD\" Preview '$(_esc_sq "$__entry")'")"
 
 	case $__opt in
