@@ -354,7 +354,7 @@ _update() {
 	sfeed_update
 	_cache_new
 	__new="$(_count)"
-	if [ "$__new" -gt "$__old" ]; then
+	if diff /tmp/rss.new "${NEW_CACHE}"; then
 		notify-send RSS "$((__new - __old)) new entries in $(_calc_new_diff)"
 	fi
 	rm /tmp/rss.new
