@@ -1,11 +1,15 @@
 #!/bin/sh
 
 # shellcheck disable=SC2063
-H=$(xrandr | grep '*' | sed 's/x.*$//' | tr -d ' ')
 h=900
+if command -v xrandr > /dev/null; then
+	H=$(xrandr | grep '*' | sed 's/x.*$//' | tr -d ' ')
+else
+	H=$h
+fi
 
 if [ "$DISPLAY" ]; then
-    mpv --ytdl-format "bestvideo[height<=?${H}]+bestaudio/best" --force-window=immediate --autofit=$h "$*" &
+    mpv --ytdl-format="bestvideo[height<=?${H}]+bestaudio/best" --force-window=immediate --autofit=$h "$*" &
 else
     mpv --vo=drm --autofit=$h "$*"
 fi
