@@ -33,7 +33,7 @@ _www() {
 	if [ "$DISPLAY" ]; then
 		x-www-browser "$@"
 	else
-		lynx "$@"
+		"${BROWSER:-lynx}" "$@"
 	fi
 }
 
