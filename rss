@@ -139,7 +139,7 @@ _find_entry() {
 # \n's.  As such, I have to do this:
 
 _fmt_entry() {
-	echo "$*" |  tr '\n' ' '
+	echo "$*" | sed 's/\\n/ /g'
 }
 
 # Convert an entry into a formatted description.
