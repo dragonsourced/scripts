@@ -3,9 +3,9 @@
 RSSD=$HOME/.sfeed/feeds
 NEW_CACHE=${RSSD}/.new
 
-NEW_COLOR='\033[1;33m'
+NEW_COLOR=''
 OLD_COLOR=''
-NUL_COLOR='\033[0m'
+NUL_COLOR=''
 
 NEW_IND='N'
 OLD_IND=' '
