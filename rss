@@ -286,7 +286,7 @@ _selopt() {
 			;;
 		"$OPT_AUD")
 			clear
-			mpv --no-video "$__enc"
+			mpv -no-video "$__enc"
 			;;
 		"$OPT_TITLE")
 			clear
