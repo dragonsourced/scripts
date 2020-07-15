@@ -24,7 +24,7 @@ _menu() {
 # Pager wrapper.
 
 _pager() {
-	sensible-pager
+	"${PAGER:-less}" "$@"
 }
 
 # Open links in a web browser.
