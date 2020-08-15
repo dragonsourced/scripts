@@ -243,12 +243,11 @@ _list_opts() {
 
 _selopt() {
 	__tmp="$(tempfile)"
-	__sq="$__tmp"
+
+	cat > "$__tmp"
 
 	__title="$(sfeed_fmt title < "$__tmp")"
 	__sq="$(_esc_sq "$__title")"
-
-	cat > "$__tmp"
 
 while true; do
 	__link="$(sfeed_fmt link < "$__tmp")"
