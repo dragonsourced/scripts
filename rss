@@ -1,41 +1,9 @@
-#!/bin/sh
+#!/bin/sh -e
 
-RSSD=$HOME/.sfeed/feeds
-NEW_CACHE=${RSSD}/.new
+FEEDD=~/.sfeed/feeds
+NEW="${FEEDD}/.new"
 
-NEW_COLOR=''
-OLD_COLOR=''
-NUL_COLOR=''
-
-NEW_IND='N'
-OLD_IND=' '
-
-cd "${RSSD}" || exit
-
-clear
-[ "$DISPLAY" ] && transset --id "${WINDOWID}" "$(theme g termopacity)" > /dev/null 2> /dev/null
-
-# Simple menu wrapper.
-
-_menu() {
-	fzf --reverse --prompt "$* "
-}
-
-# Pager wrapper.
-
-_pager() {
-	"${PAGER:-less}" "$@"
-}
-
-# Open links in a web browser.
-
-_www() {
-	if [ "$DISPLAY" ]; then
-		x-www-browser "$@"
-	else
-		"${BROWSER:-lynx}" "$@"
-	fi
-}
+cd "${FEEDD}" || return
 
 # Escape a string so it doesn't mess up my regexes.
 
@@ -43,10 +11,70 @@ _esc() {
     echo "$*" | sed -e 's/\[/\\[/g' -e 's/\]/\\]/g' -e 's/\*/\\*/g' -e 's/\./\\./g'
 }
 
-# Escape a single-quoted string.
+# # of new entries in a given feed/directory.
 
-_esc_sq() {
-	echo "$*" | sed "s/'/'\"'\"'/g"
+_new_in() {
+	grep "^$(_esc "$(realpath "$*")")	" "${NEW}" | cut -f2
+}
+
+# Does the given feed contain any new entries?
+
+_has_new() {
+	__n="$(_new_in "$*")"
+	[ "$__n" ] && [ "$__n" -ne 0 ]
+}
+
+# Strip new entry count from feed name.
+
+_strip_new() {
+	sed -e 's/ ([0-9 ]* new)$//' -e 's/^N //' -e 's/^  //'
+}
+
+# Self-explanatory.
+
+_list_entries() {
+	__t="$(tempfile)"
+	__n="$(_new_in "$*")"
+	sfeed_fmt title < "$*" > "$__t"
+	if [ "$__n" -gt 0 ]; then
+		sed "$__n"q "$__t" | sed 's/^/N /'
+		sed -e "1,$__n"d -e 's/^/  /' "$__t"
+	else
+		sed 's/^/  /' "$__t"
+	fi
+	rm "$__t"
+}
+
+_list_feeds() {
+	__d="${*:-.}"
+	find "$__d" -maxdepth 1\
+	    | grep -ve '\.new' -e "^$(_esc "$__d")$"\
+	    | while read -r __f; do
+		if ! ([ "$NEW_ONLY" ] && ! _has_new "$__f"); then
+			echo "$(basename "$__f") ($(_new_in "$__f") new)"
+		fi
+	done
+}
+
+# Extract a readable description from an entry listing.
+
+_desc() {
+	sfeed_fmt content\
+	    | sed 's/\\n/\n/g'\
+	    | lynx -dump -stdin -width="${COLUMNS}"
+}
+
+# Print a full entry line from, given only the title.
+
+_entry() {
+	grep "	$(_esc "$*")	" | sed 1q
+}
+
+# Count the number of entries currently present in ${NEW}
+
+_count() {
+	# Assumes 1 entry per line.
+	find "${FEEDD}" -type f -exec cat {} \; | wc -l
 }
 
 # Calculate the # of new entries in a feed,
@@ -58,283 +86,15 @@ _calc_new() {
 }
 
 _cache_new() { 
-	find "${RSSD}" | while read -r __f; do
+	find "${FEEDD}" | while read -r __f; do
 		echo "$__f	$(_calc_new "$__f")"
-	done | grep -ve "${NEW_CACHE}" -e "${RSSD}	" > "${NEW_CACHE}"
-}
-
-# Convert a local filename into an absolute one.
-
-_abs() {
-	realpath "$*"
-}
-
-# Return the # of new entries in a feed or directory.
-
-_new() {
-	[ -f "${NEW_CACHE}" ] || _cache_new
-	__new2r=$(grep "^$(_abs "$*")" "${NEW_CACHE}" | sed 1q | cut -d'	' -f2)
-	if [ "$__new2r" ]; then
-		# converts possible erroneous strings
-		echo "$((__new2r + 0))"
-	else
-		echo 0
-	fi
-}
-
-# Display a feed or directory, when applicable.
-
-_show_feed() {
-	__new="$(_new "$(_abs "$*")")"
-	if [ "$__new" -gt 0 ]; then
-		echo "$(basename "$*") ($__new new)"
-	elif ! [ "$NEW_ONLY" ]; then
-		basename "$*"
-	fi
-}
-
-# Display all available feeds/directories.
-
-_feeds() {
-	find . -maxdepth 1 -mindepth 1 | while read -r __feed; do
-		_show_feed "$__feed"
-	done | grep -v '^\.'
-}
-
-# Select a feed.
-
-_selfeed() {
-	while pwd | grep -q "$RSSD"; do
-		__feed=$(_feeds | fzf --prompt 'RSS '\
-		    --reverse\
-		    --preview="$0 startin \"$PWD\" list {}")
-
-		[ "$__feed" ] || __feed=..
-
-		__feed="$(_clean_feed "$__feed")"
-
-		if [ -d "$__feed" ]; then
-			cd "$__feed" || return
-		elif [ -f "$__feed" ]; then
-			_selentry "$__feed"
-		fi
-	done
-}
-
-# The string to grep for to find an entry in a feed.
-
-_entry_regx() {
-	echo "	$(_esc "$*")	"
-}
-
-# Find an entry from its title.
-# Args: title, feed
-
-_find_entry() {
-	grep "$(_entry_regx "$1")" < "$2" | sed 1q
-}
-
-# Entries seem to wind up across multiple lines,
-# even though they're encoded with non-literal
-# \n's.  As such, I have to do this:
-
-_fmt_entry() {
-	echo "$*" | sed 's/\\n/ /g'
-}
-
-# Convert an entry into a formatted description.
-
-_desc() {
-	echo "$*"\
-	    | sfeed_fmt content\
-	    | lynx -dump -stdin -width="${COLUMNS:-80}"
-}
-
-# Display a new entry in a feed.
-
-_show_new_entry() {
-	if [ "$NOCOLOR" ]; then
-		echo "${NEW_IND} $*"
-	else
-		echo "${NEW_COLOR}${NEW_IND}${NUL_COLOR} $*"
-	fi
-}
-
-# Display an old entry in a feed.
-
-_show_old_entry() {
-	if [ "$NOCOLOR" ]; then
-		echo "${OLD_IND} $*"
-	else
-		echo "${OLD_COLOR}${OLD_IND}${NUL_COLOR} $*"
-	fi
-}
-
-# List all of the entries in a feed.
-
-_list_entries() {
-	sfeed_fmt title < "$*" > /tmp/rss.entries
-
-	___new_entries="$(_new "$*")"
-
-	if [ "$___new_entries" -gt 0 ]; then
-		sed "$___new_entries"q /tmp/rss.entries\
-		    | while read -r __list_entry; do
-			_show_new_entry "$__list_entry"
-		done
-
-		sed -i "1,${___new_entries}"d /tmp/rss.entries
-	fi
-
-	while read -r __list_entry; do
-		_show_old_entry "$__list_entry"
-	done < /tmp/rss.entries
-
-	rm /tmp/rss.entries
-}
-
-# Clean an entry title of superfluous formatting,
-# such as $NEW_IND.
-
-_clean_entry() {
-	echo "$*" | sed\
-	    -e "s/^$(_esc "${NEW_IND}") //"\
-	    -e "s/^$(_esc "${OLD_IND}") //"\
-	    -e "s/^$(_esc "${NEW_COLOR}${NEW_IND}${NUL_COLOR}") //"\
-	    -e "s/^$(_esc "${OLD_COLOR}${OLD_IND}${NUL_COLOR}") //"
-}
-
-# Same, but for feeds.
-
-_clean_feed() {
-	echo "$*" | sed 's/ ([0-9]* new)$//'
-}
-
-# Select an entry in a feed.
-
-_selentry() {
-	__feed="$*"
-	while true; do
-		__entry=$(NOCOLOR=1 _list_entries "$__feed" | fzf\
-		    --reverse\
-		    --prompt="$__feed "\
-		    --preview="$0 startin \"$PWD\" preview {} \"$__feed\"")
-		[ "$__entry" ] || break
-		__entry="$(_clean_entry "$__entry")"
-		_selopt "$(_find_entry "$__entry" "$__feed")" "$__feed"
-	done
-}
-
-# List available options for an entry.
-
-OPT_VID="Play video."
-OPT_AUD="Play audio."
-OPT_TITLE="View full title."
-OPT_DESC="View description."
-OPT_WWW="Open in a web browser."
-OPT_CPY="Copy link to clipboard."
-
-# Check if the given link is a video.
-
-_is_vid() {
-	echo "$*" | sfeed_fmt link | grep -q\
-	-e 'youtube.com/watch?v='\
-	-e 'youtube.be/watch?v='
-}
-
-# Check if the given link is playable audio.
-
-_is_aud() {
-	echo "$*" | sfeed_fmt enclosure | grep -Eq '\.(mp3|mp4|m4a|wav|webm)'
-}
-
-_opts() {
-	if _is_vid "$*"; then
-		echo "$OPT_VID"
-	fi
-	if _is_aud "$*" || _is_vid "$*"; then
-		echo "$OPT_AUD"
-	fi
-	echo "$OPT_DESC"
-	echo "$OPT_TITLE"
-	echo "$OPT_WWW"
-	echo "$OPT_CPY"
-}
-
-# Format a title for use as a prompt.
-
-_fmt_prompt_title() {
-	echo "$*" | cut -c-50
-}
-
-# Select an option to interact with an entry.
-# Args: entry
-
-_selopt() {
-	__entry="$(_fmt_entry "$*")"
-	__title="$(echo "$__entry" | sfeed_fmt title)"
-	__link="$(echo "$__entry" | sfeed_fmt link)"
-	__enc="$(echo "$__entry" | sfeed_fmt enclosure | cut -d' ' -f1)"
-	__opt="$(_opts "$__entry" | fzf\
-	    --reverse\
-	    --prompt="$(_fmt_prompt_title "$__title") "\
-	    --preview="$0 startin \"$PWD\" Preview '$(_esc_sq "$__entry")'")"
-
-	case $__opt in
-		"$OPT_VID")
-			nohup vid "$__link" > /dev/null 2> /dev/null &
-			;;
-		"$OPT_AUD")
-			clear
-			mpv -no-video "$__enc"
-			;;
-		"$OPT_TITLE")
-			clear
-			echo "$__title" | _pager ;;
-		"$OPT_DESC")
-			clear
-			_desc "$__entry" | _pager
-			;;
-		"$OPT_WWW")
-			_www "$__link"
-			;;
-		"$OPT_CPY")
-			echo "$__link" | xsel
-			echo "$__link" | xsel -b
-			;;
-		*) return ;;
-	esac
-
-	_selopt "$*"
-}
-
-# Preview an entry in a feed by printing its description.
-# Args: title, feed
-
-_preview_entry() {
-	_desc "$(_fmt_entry "$(_find_entry "$1" "$2")")"\
-		| sed ${LINES:-24}q
-}
-
-# Same as _preview_entry(), but the entry's already been found.
-# Args: entry
-
-_Preview_entry() {
-	_desc "$*"\
-		| sed ${LINES:-24}q
-}
-
-# Count the number of entries currently present.
-
-_count() {
-	# Assumes 1 entry per line.
-	find "${RSSD}" -type f -exec cat {} \; | wc -l
+	done | grep -ve "${NEW}" -e "${FEEDD}	" > "${NEW}"
 }
 
 # Output the feeds with new entries.
 
 _calc_new_diff() {
-	diff /tmp/rss.new "${NEW_CACHE}"\
+	diff /tmp/rss.new "${NEW}"\
 	    | grep '^> '\
 	    | sed 's/^> //'\
 	    | cut -f1\
@@ -350,53 +110,174 @@ _calc_new_diff() {
 
 _update() {
 	_cache_new
-	cp "${NEW_CACHE}" /tmp/rss.new
+	cp "${NEW}" /tmp/rss.new
 	__old="$(_count)"
 	sfeed_update
 	_cache_new
 	__new="$(_count)"
-	if diff /tmp/rss.new "${NEW_CACHE}"; then
+	if diff /tmp/rss.new "${NEW}"; then
 		notify-send RSS "$((__new - __old)) new entries in $(_calc_new_diff)"
 	fi
 	rm /tmp/rss.new
 }
 
-if [ "$1" ]; then
-	while [ "$1" ]; do
-		case $1 in
-			u|up|update)
-				_update
-				;;
-			s|startin)
-				cd "$2" || exit
-				shift
-				;;
-			p|preview)
-				_preview_entry "$(_clean_entry "$2")" "$3"
-				shift
-				shift
-				;;
-			P|Preview)
-				_Preview_entry "$2"
-				shift
-				;;
-			l|list)
-				__to_list="$(_clean_feed "$2")"
-				if [ -f "$__to_list" ]; then
-					_list_entries "$__to_list"
-				elif [ -d "$__to_list" ]; then
-					cd "$__to_list" || return
-					_feeds
-				fi | sed ${LINES:-24}q
-				shift
-				;;
-			n|new)
-				shift
-				NEW_ONLY=1 exec "$0" "$@"
-				;;
-		esac
+# Command handling.
+
+while [ "$1" ]; do
+	case $1 in
+
+	cd)
+		cd "$2" || exit
+		shift ;;
+
+	feed)
+		__f="$(echo "$2" | _strip_new)"
+		if [ -f "$__f" ]; then
+			_list_entries "$__f"
+		elif [ -d "$__f" ]; then
+			_list_feeds "$__f"
+		else
+			echo "FEED PREVIEW ERROR"
+		fi
 		shift
-	done
-else
+		exit ;;
+
+	desc)
+		_entry "$(echo "$3" | _strip_new)" < "$(echo "$2")" | _desc
+		exit ;;
+
+	new)
+		export NEW_ONLY=yes ;;
+
+	up|update)
+		_update ;;
+
+	esac
+	shift
+done
+
+# Escape a single-quoted string.
+
+_esc_sq() {
+	echo "$*" | sed "s/'/'\"'\"'/g"
+}
+
+# fzf wrapper.
+
+_fzf() {
+	fzf --reverse "$@"
+}
+
+# Select a feed.
+
+_selfeed() {
+	[ "$PWD" = "$(dirname "$FEEDD")" ] && return
+
+	__feed="$(_list_feeds | NEW_ONLY="${NEW_ONLY}" _fzf --prompt="$(basename "$PWD") " --preview="$0 cd '$(_esc_sq $PWD)' feed {}" | _strip_new)"
+	__feed="${__feed:-..}"
+
+	if [ -d "$__feed" ]; then
+		cd "$__feed" || return
+		_selfeed
+	elif [ -f "$__feed" ]; then
+		_selentry "$__feed"
+	fi
+}
+
+# Select an entry from said feed.
+
+_selentry() {
+	__sq="$(_esc_sq "$*")"
+	__entry="$(_list_entries "$*"\
+	    | NEW_ONLY="${NEW_ONLY}" _fzf\
+		--prompt="$* "\
+		--preview="$0 cd '$(_esc_sq $PWD)' desc '$__sq' {}"\
+	    | _strip_new)"
+
+	if [ "$__entry" ]; then
+		_entry "$__entry" < "$*" | _selopt
+		_selentry "$*"
+	fi
+
 	_selfeed
-fi
+}
+
+# Is the given link an audio file?
+
+_is_aud() {
+	echo "$*" | grep -q\
+	    -e 'youtube\.com'\
+	    -e 'youtu\.be'\
+	    -e '\.mp3'\
+	    -e '\.m4a'\
+	    -e '\.wav'\
+	    -e '\.ogg'
+}
+
+# Is the given link a video file?
+
+_is_vid() {
+	echo "$*" | grep -q\
+	    -e 'youtube\.com'\
+	    -e 'youtu\.be'\
+	    -e '\.mp3'
+}
+
+# List available options for a given entry.
+
+OPT_WWW="Open in a web browser"
+OPT_CPY="Copy link to clipboard"
+OPT_DSC="Read in full"
+OPT_VID="Play video"
+OPT_AUD="Play audio"
+
+_list_opts() {
+	echo "$OPT_DSC"
+	echo "$OPT_CPY"
+	echo "$OPT_WWW"
+	_is_vid "$__link" && echo "$OPT_VID"
+	_is_aud "$__link" && echo "$OPT_AUD"
+}
+
+# Select an option with which to operate upon said entry.
+
+_selopt() {
+	__tmp="$(tempfile)"
+	__sq="$__tmp"
+
+	__title="$(sfeed_fmt title < "$__tmp")"
+	__sq="$(_esc_sq "$__title")"
+
+	cat > "$__tmp"
+
+while true; do
+	__link="$(sfeed_fmt link < "$__tmp")"
+	__opt="$(_list_opts "$__tmp"\
+	    | NEW_ONLY="${NEW_ONLY}" _fzf\
+		--prompt="$(sfeed_fmt title < "$__tmp" | cut -b-50) "\
+	        --preview="$0 desc $__tmp '$__sq'"\
+	    | _strip_new)"
+
+	clear
+
+	case "$__opt" in
+	"$OPT_WWW")
+		if [ "$DISPLAY" ]; then
+			x-www-browser "$__link"
+		else
+			"${BROWSER:-lynx}" "$__link"
+		fi ;;
+	"$OPT_DSC")
+		_desc < "$__tmp" | LESSHISTFILE=/dev/null "${PAGER:-less}" ;;
+	"$OPT_VID")
+		vid "$__link" ;;
+	"$OPT_AUD")
+		mpv --no-video "$__link" ;;
+	*)
+		rm "$__tmp"
+		return ;;
+	esac
+done
+}
+
+_selfeed
