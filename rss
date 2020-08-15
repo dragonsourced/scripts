@@ -235,8 +235,8 @@ _list_opts() {
 	echo "$OPT_DSC"
 	echo "$OPT_CPY"
 	echo "$OPT_WWW"
-	_is_vid "$__link" && echo "$OPT_VID"
-	_is_aud "$__link" && echo "$OPT_AUD"
+	(_is_vid "$__enc" || _is_vid "__link") && echo "$OPT_VID"
+	(_is_aud "$__enc" || _is_aud "__link") && echo "$OPT_AUD"
 }
 
 # Select an option with which to operate upon said entry.
@@ -251,6 +251,7 @@ _selopt() {
 
 while true; do
 	__link="$(sfeed_fmt link < "$__tmp")"
+	__enc="$(sfeed_fmt enclosure < "$__tmp")"
 	__opt="$(_list_opts "$__tmp"\
 	    | NEW_ONLY="${NEW_ONLY}" _fzf\
 		--prompt="$(sfeed_fmt title < "$__tmp" | cut -b-50) "\
@@ -269,9 +270,9 @@ while true; do
 	"$OPT_DSC")
 		_desc < "$__tmp" | LESSHISTFILE=/dev/null "${PAGER:-less}" ;;
 	"$OPT_VID")
-		vid "$__link" > /dev/null 2> /dev/null ;;
+		vid "${__enc:-__link}" > /dev/null 2> /dev/null ;;
 	"$OPT_AUD")
-		mpv --no-video "$__link" ;;
+		mpv --no-video "${__enc:-__link}" ;;
 	"$OPT_CPY")
 		echo "$__link" | xsel -b ;;
 	*)
