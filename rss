@@ -272,6 +272,8 @@ while true; do
 		vid "$__link" > /dev/null 2> /dev/null ;;
 	"$OPT_AUD")
 		mpv --no-video "$__link" ;;
+	"$OPT_CPY")
+		echo "$__link" | xsel -b ;;
 	*)
 		rm "$__tmp"
 		return ;;
