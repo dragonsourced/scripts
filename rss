@@ -269,7 +269,7 @@ while true; do
 	"$OPT_DSC")
 		_desc < "$__tmp" | LESSHISTFILE=/dev/null "${PAGER:-less}" ;;
 	"$OPT_VID")
-		vid "$__link" ;;
+		vid "$__link" > /dev/null 2> /dev/null ;;
 	"$OPT_AUD")
 		mpv --no-video "$__link" ;;
 	*)
