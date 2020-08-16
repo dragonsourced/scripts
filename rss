@@ -270,8 +270,11 @@ while true; do
 		--prompt="$(sfeed_fmt title < "$__tmp" | cut -b-50) "\
 	        --preview="$0 desc $__tmp '$__sq'"\
 	    | _strip_new)"
-	__media="$(cat /tmp/rss.media)"
-	rm -f /tmp/rss.media
+
+	[ -f /tmp/rss.media ] && {
+		__media="$(cat /tmp/rss.media)"
+		rm -f /tmp/rss.media
+	}
 
 	clear
 
