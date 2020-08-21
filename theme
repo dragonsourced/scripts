@@ -19,7 +19,7 @@ _statusbar() {
 }
 
 _wallpaper() {
-	feh --no-fehbg --bg-fill "$HOME/pics/wall/$THEME"
+	xsetroot -solid "#$($0 g bg)"
 }
 
 _xresources() {
