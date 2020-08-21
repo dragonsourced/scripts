@@ -1,0 +1,33 @@
+#!/bin/sh
+
+cd ~/docs/w || exit
+
+YEAR="$(date +%Y)"
+MONTH="$(date +%m)"
+DAY="$(date +%d)"
+
+_new() {
+	for __f in "$@"; do
+		mkdir -pv "$(dirname "$__f")"
+		cat > "$__f" <<EOF
+ $YEAR/$MONTH/$DAY
+============
+
+Lorem ipsum dolor sit amet.
+EOF
+	done
+}
+
+_edit() {
+	for __f in "$@"; do
+		[ -f "$__f" ] || _new "$__f"
+		"$EDITOR" "$__f"
+	done
+}
+
+[ "$1" ] || _edit "$YEAR/$MONTH/$DAY.md"
+
+while [ "$1" ]; do
+	_edit "$1"
+	shift
+done
