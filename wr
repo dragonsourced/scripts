@@ -28,6 +28,10 @@ _edit() {
 [ "$1" ] || _edit "$YEAR/$MONTH/$DAY.md"
 
 while [ "$1" ]; do
-	_edit "$1"
+	if [ -f "$1"*.md ]; then
+		_edit "$1"*.md
+	else
+		_edit "$1"
+	fi
 	shift
 done
