@@ -10,8 +10,7 @@ _new() {
 	for __f in "$@"; do
 		mkdir -pv "$(dirname "$__f")"
 		cat > "$__f" <<EOF
- $YEAR/$MONTH/$DAY
-============
+# $YEAR/$MONTH/$DAY
 
 Lorem ipsum dolor sit amet.
 EOF
