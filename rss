@@ -228,11 +228,13 @@ _is_vid() {
 OPT_WWW="Open in a web browser"
 OPT_CPY="Copy link to clipboard"
 OPT_DSC="Read in full"
+OPT_TTL="View title"
 OPT_VID="Play video"
 OPT_AUD="Play audio"
 
 _list_opts() {
 	echo "$OPT_DSC"
+	echo "$OPT_TTL"
 	echo "$OPT_CPY"
 	echo "$OPT_WWW"
 	if _is_vid "__enc"; then
@@ -287,6 +289,8 @@ while true; do
 		fi ;;
 	"$OPT_DSC")
 		_desc < "$__tmp" | LESSHISTFILE=/dev/null "${PAGER:-less}" ;;
+	"$OPT_TTL")
+		sfeed_fmt title < "$__tmp" | LESSHISTFILE=/dev/null "${PAGER:-less}" ;;
 	"$OPT_VID")
 		vid "$__media" > /dev/null 2> /dev/null ;;
 	"$OPT_AUD")
