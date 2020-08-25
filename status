@@ -15,7 +15,11 @@ has_compositor() {
 
 FONT="${FONT:-$(theme get barfont)}"
 
-BG=$(theme get bg)
+if theme get wall | grep '#'; then
+	BG=$(theme get wall | tr -d '#')
+else
+	BG=$(theme get bg)
+fi
 FG=$(theme get fg)
 OPACITY=$(theme get opacity)
 
