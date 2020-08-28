@@ -82,7 +82,11 @@ _count() {
 # a directory.
 
 _calc_new() {
-	find "$*" -type f -exec cat {} \; | sfeed_fmt new | wc -l
+	find "$*" -type f -exec cat {} \;\
+	    | sort -n\
+	    | sed 50q\
+	    | sfeed_fmt new\
+	    | wc -l
 }
 
 _cache_new() { 
