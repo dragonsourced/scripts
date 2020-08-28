@@ -5,7 +5,8 @@ _sh() {
 }
 
 _c() {
-	cppcheck "$1"
+	cppcheck -q "$1"
+	splint +quiet +weak +posixlib -syntax "$1"
 }
 
 _cpp() {
