@@ -14,7 +14,7 @@ add_arg() {
 }
 
 new_only() {
-	sort -n | sed 24q | awk -F'\t' "\$1>$OLD"
+	awk -F'\t' "\$1>$OLD"
 }
 
 while [ "$1" ]; do
