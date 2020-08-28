@@ -6,11 +6,15 @@ OLD=$(($(date +%s) - MAXAGE))
 ARGS=
 
 add_arg() {
-	ARGS="${ARGS} \$$1"
+	if [ "$ARGS" ]; then
+		ARGS="${ARGS},$1"
+	else
+		ARGS="$1"
+	fi
 }
 
 new_only() {
-	awk "\$1>$OLD"
+	awk -F'\t' "\$1>$OLD"
 }
 
 while [ "$1" ]; do
@@ -30,7 +34,15 @@ while [ "$1" ]; do
 done
 
 if [ "$NEW" ]; then
-	new_only | awk -F'\t' "{ print ${ARGS}; }"
+	if [ "$ARGS" ]; then
+		new_only | cut -f "$ARGS"
+	else
+		new_only
+	fi
 else
-	awk -F'\t' "{ print ${ARGS}; }"
+	if [ "$ARGS" ]; then
+		cut -f "$ARGS"
+	else
+		cat
+	fi
 fi
