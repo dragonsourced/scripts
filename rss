@@ -83,8 +83,6 @@ _count() {
 
 _calc_new() {
 	find "$*" -type f -exec cat {} \;\
-	    | sort -n\
-	    | sed 50q\
 	    | sfeed_fmt new\
 	    | wc -l
 }
