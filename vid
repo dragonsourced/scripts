@@ -4,7 +4,7 @@ if [ "$DISPLAY" ]; then
 	# shellcheck disable=SC2063
 	h=900
 	if command -v xrandr > /dev/null; then
-		H=$(xrandr | grep '*' | sed 's/x.*$//' | tr -d ' ')
+		H=$(xrandr | grep '\*' | sed 's/x.*$//' | tr -d ' ')
 	else
 		H=1080
 	fi
