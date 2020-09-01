@@ -27,6 +27,7 @@ while [ "$1" ]; do
 	if [ -d "$1" ]; then
 		_recurse "$1"
 	else
+		wc "$1"
 		case $1 in
 			# I don't know how to lint these.
 
@@ -34,7 +35,7 @@ while [ "$1" ]; do
 			tags) ;;
 
 			*.sh) _sh "$1" ;;
-			*.md|*.txt) wc "$1" ;;
+			*.md|*.txt) spell "$1" ;;
 			*.c|*.h) _c "$1" ;;
 			*.cc|*.cpp|*.hpp) _cpp "$1" ;;
 			*.lua) luacheck "$1" ;;
