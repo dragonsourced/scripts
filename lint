@@ -6,7 +6,7 @@ _sh() {
 
 _c() {
 	cppcheck -q "$1"
-	splint +quiet +weak +posixlib -syntax "$1"
+	splint +quiet +weak +posixlib -syntax -retvalother "$1"
 }
 
 _cpp() {
