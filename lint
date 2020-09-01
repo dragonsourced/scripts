@@ -6,7 +6,8 @@ _sh() {
 
 _c() {
 	cppcheck -q "$1"
-	splint +quiet +weak +posixlib -syntax -retvalother "$1"
+	splint +quiet +weak +posixlib -syntax -retvalother "$1"\
+	    | grep -r '< Location unknown >'
 }
 
 _cpp() {
