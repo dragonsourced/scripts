@@ -1,3 +1,11 @@
 #!/bin/sh
 
-youtube-dl -o- "ytsearch:$*" | vid -
+_vid() {
+	if [ "$DISPLAY" ]; then
+		vid -
+	else
+		mpv --no-video -
+	fi
+}
+
+youtube-dl -o- "ytsearch:$*" | _vid
