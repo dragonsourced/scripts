@@ -61,7 +61,7 @@ _list_feeds() {
 _desc() {
 	sfeed_fmt content\
 	    | sed 's/\\n/\n/g'\
-	    | lynx -dump -stdin -width="${COLUMNS}"
+	    | lynx -dump -stdin -nomargins -width="${COLUMNS}"
 }
 
 # Print a full entry line from, given only the title.
