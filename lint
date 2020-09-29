@@ -37,6 +37,7 @@ while [ "$1" ]; do
 
 			*.sh) _sh "$1" ;;
 			*.md|*.txt) spell "$1" ;;
+			*.htm|*.html) sed 's/<[^<]*>//g' "$1" | spell ;;
 			*.c|*.h) _c "$1" ;;
 			*.cc|*.cpp|*.hpp) _cpp "$1" ;;
 			*.lua) luacheck "$1" ;;
