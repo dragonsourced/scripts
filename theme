@@ -22,7 +22,7 @@ _wallpaper() {
 	if $0 g wall | grep '#'; then
 		xsetroot -solid "$($0 g wall)"
 	else
-		feh --no-fehbg -bg-fill "$($0 g wall)"
+		feh --no-fehbg --bg-fill "$($0 g wall)"
 	fi
 }
 
