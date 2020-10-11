@@ -154,6 +154,12 @@ while [ "$1" ]; do
 	up|update)
 		_update ;;
 
+	quit)
+		exit ;;
+
+	upq)
+		_update; exit ;;
+
 	esac
 	shift
 done
