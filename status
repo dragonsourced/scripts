@@ -18,7 +18,7 @@ FONT="${FONT:-$(theme get barfont)}"
 if theme get wall | grep '#'; then
 	BG=$(theme get wall | tr -d '#')
 else
-	BG=$(theme get bg)
+	BG=$(theme get barbg)
 fi
 FG=$(theme get fg)
 OPACITY=$(theme get opacity)
