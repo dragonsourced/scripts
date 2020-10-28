@@ -18,6 +18,11 @@ _statusbar() {
 	status "$THEME" &
 }
 
+_conky() {
+	( pgrep -x conky && killall conky ) > /dev/null 2> /dev/null
+	[ -f "$HOME/.config/conky/$THEME.conf" ] && conky -dc "$HOME/.config/conky/$THEME.conf"
+}
+
 _wallpaper() {
 	if $0 g wall | grep '#'; then
 		xsetroot -solid "$($0 g wall)"
@@ -103,6 +108,7 @@ _set() {
 	_gtk
 	_wallpaper
 	_statusbar
+	_conky
 }
 
 _list() {
