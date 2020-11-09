@@ -30,6 +30,14 @@ if [ "$1" ]; then
 		tr|trans)
 			www "https://translate.google.com/?q=$q&sl=en"
 			;;
+		a|al|alias)
+			url="$(grep "^$q\t" ~/.aliases | cut -f2)"
+			if [ "$url" ]; then
+				www "$url"
+			else
+				echo "$q: Alias not found" > /dev/stderr
+			fi
+			;;
 		*)
 			"$0" ddg "$x $q"
 			;;
