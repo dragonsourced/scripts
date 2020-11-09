@@ -31,11 +31,13 @@ if [ "$1" ]; then
 			www "https://translate.google.com/?q=$q&sl=en"
 			;;
 		a|al|alias)
-			url="$(grep "^$q\t" ~/.aliases | cut -f2)"
+			if [ "$q" ]; then
+				url="$(grep "^$q	" ~/.aliases | cut -f2)"
+			else
+				url="$(menu < ~/.aliases | cut -f2)"
+			fi
 			if [ "$url" ]; then
 				www "$url"
-			else
-				echo "$q: Alias not found" > /dev/stderr
 			fi
 			;;
 		*)
