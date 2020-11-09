@@ -34,7 +34,7 @@ if [ "$1" ]; then
 			if [ "$q" ]; then
 				url="$(grep "^$q	" ~/.aliases | cut -f2)"
 			else
-				url="$(cut -f1 < ~/.aliases | menu)"
+				url="$(cut -f1 < ~/.aliases | menu -i -p 'Alias selection')"
 				if [ "$url" ]; then
 					exec "$0" alias "$url"
 				fi
