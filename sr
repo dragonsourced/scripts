@@ -34,7 +34,10 @@ if [ "$1" ]; then
 			if [ "$q" ]; then
 				url="$(grep "^$q	" ~/.aliases | cut -f2)"
 			else
-				url="$(menu < ~/.aliases | cut -f2)"
+				url="$(cut -f1 < ~/.aliases | menu)"
+				if [ "$url" ]; then
+					exec "$0" alias "$url"
+				fi
 			fi
 			if [ "$url" ]; then
 				www "$url"
