@@ -1,0 +1,26 @@
+#!/bin/sh -e
+#
+# Format a file, depending on its extension
+#
+
+FILE="$(tempfile)"
+
+cat > "$FILE"
+
+_fmt() {
+	sed -e 's/^====/ ====/'\
+	    -e 's/^----/ ----/'\
+	    | fmt -w72\
+	    | sed\
+	    -e 's/^ ====/====/'\
+	    -e 's/^ ----/----/'
+}
+
+if sed 1q "$FILE" | grep -qx -- ---; then
+	sed '1p;1d;/---/q' "$FILE"
+	sed 1,/---/d "$FILE" | _fmt
+else
+	_fmt < "$FILE"
+fi
+
+rm "$FILE"
