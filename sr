@@ -30,5 +30,8 @@ if [ "$1" ]; then
 		tr|trans)
 			www "https://translate.google.com/?q=$q&sl=en"
 			;;
+		*)
+			"$0" ddg "$x $q"
+			;;
 	esac
 fi
