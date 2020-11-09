@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/sh
 
 FEEDD=~/.sfeed/feeds
 NEW="${FEEDD}/.new"
