@@ -24,6 +24,9 @@ if [ "$1" ]; then
 		g|goo)
 			www "https://www.google.com/search?hl=en&q=$q"
 			;;
+		y|yt)
+			www "https://youtube.com/results?search_query=$q"
+			;;
 		tr|trans)
 			www "https://translate.google.com/?q=$q&sl=en"
 			;;
