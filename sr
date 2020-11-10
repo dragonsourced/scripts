@@ -32,7 +32,9 @@ if [ "$1" ]; then
 			;;
 		a|al|alias)
 			if [ "$q" ]; then
-				url="$(grep "^$q	" ~/.aliases | cut -f2)"
+				line="$(grep "^$q	" ~/.aliases)"
+				url="$(echo "$line" | cut -f2)"
+				app="$(echo "$line" | cut -f3)"
 			else
 				url="$(cut -f1 < ~/.aliases | menu -i -p 'Alias selection')"
 				if [ "$url" ]; then
@@ -40,7 +42,7 @@ if [ "$1" ]; then
 				fi
 			fi
 			if [ "$url" ]; then
-				www "$url"
+				"${app:-www}" "$url"
 			fi
 			;;
 		*)
