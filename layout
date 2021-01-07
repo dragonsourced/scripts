@@ -6,15 +6,11 @@ setlayout() {
 	setxkbmap -layout "$@"
 }
 
-n_us() { setlayout ca; }
-n_ca() { setlayout ru; }
-n_ru() { setlayout no; }
-n_no() { setlayout us; }
+n_us() { setlayout il; }
+n_il() { setlayout us; }
 
-b_us() { setlayout no; }
-b_ca() { setlayout us; }
-b_ru() { setlayout ca; }
-b_no() { setlayout ru; }
+b_il() { setlayout us; }
+b_us() { setlayout il; }
 
 next() { "n_$layout"; }
 prev() { "b_$layout"; }
