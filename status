@@ -39,7 +39,7 @@ status() {
     right=$4
     b=$5
     while ps "$PID" > /dev/null; do
-        echo "%{l}${MARGIN}$($left)%{c}$($mid)%{r}$($right)${MARGIN}"
+        echo "${MARGIN}$($left) %{c}$($mid)%{r}$($right)${MARGIN}"
         sleep "$delay"
     done | bar "$b"
 }
