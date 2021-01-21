@@ -25,6 +25,4 @@ fi
 
 if command -v dunstify > /dev/null 2> /dev/null; then
     dunstify -u "$urgency" -r 1 -- "$bar"
-else
-    notify-send -u "$urgency" "Volume" -h "int:value:$vol"
 fi
