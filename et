@@ -17,7 +17,7 @@ htm() {
 	<head>
 		<title>$title</title>
 		<meta charset="UTF-8" />
-		<link rel="stylesheet" href="/style.css" />
+		<style>$(min < "$HOME/.css")</style>
 	</head>
 
 	<body>
