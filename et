@@ -1,0 +1,42 @@
+#!/bin/sh -e
+
+IN="$1"
+OUT="$(echo "$IN" | sed -E 's/\.(txt|md)$//').htm"
+
+htm() {
+	title="$(sed '1d;2s/^ *//;q' "$1")"
+	date="$(sed '1s/^ *//;q' "$1")"
+
+	echo "<html lang=en>"
+	echo "<meta charset=UTF-8>"
+	echo "<title>$title</title>"
+	echo "<link rel=stylesheet href=/style.css>"
+	echo
+	echo "<p align=right>$date</p>"
+	echo "<center><h1>$title</h1></center>"
+	echo
+	sed '1,2d;s/^         *\(.*\)$/## \1/;s/^	\(.*\)$/### \1/' "$1" | markdown
+}
+
+pid=0
+
+bye() {
+	[ "$pid" != 0 ] && kill "$pid"
+}
+
+trap bye KILL EXIT TERM
+
+while true; do
+	if [ -f "$IN" ]; then
+		inotifywait -qq "$IN"
+		htm "$IN" > "$OUT"
+		if pgrep -x surf; then
+			killall -SIGHUP surf
+		else
+			xdotool key alt+Tab ctrl+r alt+Tab
+		fi
+	fi
+done > /dev/null 2> /dev/null &
+
+pid="$!"
+vi "$1"
