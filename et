@@ -47,11 +47,13 @@ while true; do
 	if [ -f "$IN" ]; then
 		inotifywait -qq "$IN"
 		htm "$IN" > "$OUT"
-		if pgrep -x surf; then
-			killall -SIGHUP surf
-		else
-			xdotool key alt+Tab ctrl+r alt+Tab
-		fi
+		if [ "$DISPLAY" ]; then
+			if pgrep -x surf; then
+				killall -SIGHUP surf
+			else
+				xdotool key alt+Tab ctrl+r alt+Tab
+			fi
+		end
 	fi
 done > /dev/null 2> /dev/null &
 
