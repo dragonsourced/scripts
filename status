@@ -47,7 +47,8 @@ status() {
 # Various status commands.
 
 _time() { date +'%T'; }
-_date() { date +'%D'; }
+_date() { date +'%a %D'; }
+_mori() { echo "† $(mori) †"; }
 
 # TODO: integrate with headphones
 vol() {
@@ -58,5 +59,5 @@ bat() { acpi | tr ' ' '\n' | grep % | tr -d ','; }
 
 # Top
 
-status 1  '_time' 'mori' '_date' -b &
+status 1  '_time' '_mori' '_date' -b &
 status 0  'vol'   'cov'  'bat'
