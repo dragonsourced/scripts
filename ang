@@ -21,6 +21,6 @@ to() {
 case $1 in
     t*) shift; to   "$*" ;;
     f*) shift; from "$*" ;;
-    a*) shift; to "$*"; from "$*"; true ;;
+    a*) shift; to "$*"; from "$*" ;;
     *)  echo "Usage: $0 to/from [WORD]" ;;
 esac
