@@ -46,7 +46,6 @@ trap bye KILL EXIT TERM
 
 while true; do
 	if [ -f "$IN" ]; then
-		inotifywait -qq "$IN"
 		htm "$IN" > "$OUT"
 		if [ "$DISPLAY" ]; then
 			if pgrep -x surf; then
@@ -55,6 +54,7 @@ while true; do
 				xdotool key alt+Tab ctrl+r alt+Tab
 			fi
 		fi
+		inotifywait -qqe modify "$IN"
 	fi
 done > /dev/null 2> /dev/null &
 
