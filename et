@@ -6,16 +6,33 @@ OUT="$(echo "$IN" | sed -E 's/\.(txt|md)$//').htm"
 htm() {
 	title="$(sed '1d;2s/^ *//;q' "$1")"
 	date="$(sed '1s/^ *//;q' "$1")"
+	body="$(sed '1,2d;s/^         *\(.*\)$/## \1/;s/^	\(.*\)$/### \1/' "$1" | markdown\
+		| sed 's/^/				/')"
 
-	echo "<html lang=en>"
-	echo "<meta charset=UTF-8>"
-	echo "<title>$title</title>"
-	echo "<link rel=stylesheet href=/style.css>"
-	echo
-	echo "<p align=right>$date</p>"
-	echo "<center><h1>$title</h1></center>"
-	echo
-	sed '1,2d;s/^         *\(.*\)$/## \1/;s/^	\(.*\)$/### \1/' "$1" | markdown
+	cat << EOF
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+		<title>$title</title>
+		<meta charset="UTF-8" />
+		<link rel="stylesheet" href="/style.css" />
+	</head>
+
+	<body>
+		<main>
+			<article>
+				<header>
+					<p class="date">$date</p>
+					<h1 class="title">$title</h1>
+				</header>
+
+$body
+			</article>
+		</main>
+	</body>
+</html>
+EOF
 }
 
 pid=0
