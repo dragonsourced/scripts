@@ -53,7 +53,7 @@ while true; do
 			else
 				xdotool key alt+Tab ctrl+r alt+Tab
 			fi
-		end
+		fi
 	fi
 done > /dev/null 2> /dev/null &
 
