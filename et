@@ -1,7 +1,8 @@
 #!/bin/sh -e
 
 IN="$1"
-OUT="$(echo "$IN" | sed -E 's/\.(txt|md)$//').htm"
+OUT="$2"
+[ "$OUT" ] || OUT="$(echo "$IN" | sed -E 's/\.(txt|md)$//').htm"
 
 htm() {
 	title="$(sed '1d;2s/^ *//;q' "$1")"
