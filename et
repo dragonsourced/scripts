@@ -4,10 +4,14 @@ IN="$1"
 OUT="$2"
 [ "$OUT" ] || OUT="$(echo "$IN" | sed -E 's/\.(txt|md)$//').htm"
 
+md() {
+	markdown -ffootnote
+}
+
 htm() {
 	title="$(sed '1d;2s/^ *//;q' "$1")"
 	date="$(sed '1s/^ *//;q' "$1")"
-	body="$(sed '1,2d;s/^         *\(.*\)$/## \1/;s/^	\(.*\)$/### \1/' "$1" | markdown\
+	body="$(sed '1,2d;s/^         *\(.*\)$/## \1/;s/^	\(.*\)$/### \1/' "$1" | md\
 		| sed 's/^/				/')"
 
 	cat << EOF
