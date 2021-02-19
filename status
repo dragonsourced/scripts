@@ -47,7 +47,7 @@ status() {
 # Various status commands.
 
 _time() { date +'%T'; }
-_date() { date +'%a %D'; }
+_date() { date +'%a %d/%m/%y'; }
 _mori() { echo "† $(mori) †"; }
 
 # TODO: integrate with headphones
