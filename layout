@@ -7,12 +7,12 @@ setlayout() {
 }
 
 n_us() { setlayout ca; }
-n_ca() { setlayout il; }
-n_il() { setlayout us; }
+n_ca() { setlayout ru; }
+n_ru() { setlayout us; }
 
-b_us() { setlayout il; }
+b_us() { setlayout ru; }
 b_ca() { setlayout us; }
-b_il() { setlayout ca; }
+b_ru() { setlayout ca; }
 
 next() { "n_$layout"; }
 prev() { "b_$layout"; }
