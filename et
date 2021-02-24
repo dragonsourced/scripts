@@ -40,10 +40,11 @@ $body
 EOF
 }
 
-pid=0
+PID=0
 
 bye() {
-	[ "$pid" != 0 ] && kill "$pid"
+	[ "$PID" != 0 ] && kill "$PID"
+	killall surf
 }
 
 trap bye KILL EXIT TERM
@@ -55,12 +56,12 @@ while true; do
 			if pgrep -x surf; then
 				killall -SIGHUP surf
 			else
-				xdotool key alt+Tab ctrl+r alt+Tab
+				nohup surf "file://$(realpath "$OUT")" &
 			fi
 		fi
 		inotifywait -qqe modify "$IN"
 	fi
 done > /dev/null 2> /dev/null &
 
-pid="$!"
+PID="$!"
 vi "$1"
