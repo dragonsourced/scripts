@@ -1,0 +1,86 @@
+#!/bin/sh -e
+
+md() {
+	markdown -ffootnote
+}
+
+outf() {
+	echo "$*" | sed -Ee 's/\.(txt|md)$//' -e 's/$/.htm/'
+}
+
+htm() {
+	title="$(sed '1d;2s/^ *//;q' "$1")"
+	date="$(sed '1s/^ *//;q' "$1")"
+	body="$(sed '1,2d;s/^         *\(.*\)$/## \1/;s/^	\(.*\)$/### \1/' "$1" | md\
+		| sed 's/^/				/')"
+
+	cat << EOF
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+		<title>$title</title>
+		<meta charset="UTF-8" />
+		<style>$(min < ".css")</style>
+	</head>
+
+	<body>
+		<main>
+			<article>
+				<header>
+					<p class="date">$date</p>
+					<h1 class="title">$title</h1>
+				</header>
+
+$body
+			</article>
+		</main>
+	</body>
+</html>
+EOF
+}
+
+build() {
+	for f in $(find -type f -name '*.txt'); do
+		of="$(outf "$f")"
+		if [ "$of" != "$f" ]; then
+			echo "$f -> $of"
+			htm "$f" > "$(outf "$f")"
+		fi
+	done
+}
+
+rebuild() {
+	rm -v $(find -type f -name '*.txt' | sed 's/txt$/htm/')
+	build
+}
+
+modified() {
+	tar cz $(find -type f -name '*.htm') > site.tar.gz
+}
+
+build
+modified
+inotifywait -qmr . | while read line; do
+	event="$(echo "$line" | cut -d' ' -f2)"
+	file="$(echo "$line" | cut -d' ' -f3)"
+	ofile="$(outf "$file")"
+
+	if [ "$file" = .css ]; then
+		case "$event" in
+			MODIFY|MOVED_TO|CREATE)
+				rebuild
+				modified ;;
+		esac
+	elif [ "$ofile" != "$file.htm" ] && [ "$ofile" != "$file" ]; then
+		case "$event" in
+			MODIFY|MOVED_TO|CREATE)
+				echo "$file -> $ofile <- $line"
+				htm "$file" > "$ofile"
+				modified ;;
+			DELETE|MOVED_FROM|DELETE_SELF|MOVE_SELF)
+				rm -v "$ofile"
+				modified ;;
+		esac
+	fi
+done
