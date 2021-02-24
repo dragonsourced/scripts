@@ -64,7 +64,9 @@ rebuild() {
 }
 
 modified() {
-	tar cz $(find -type f -name '*.htm') > site.tar.gz
+	if [ "$(find -type f -name '*.htm')" ]; then
+		tar cz $(find -type f -name '*.htm') > site.tar.gz
+	fi
 }
 
 pline=0
