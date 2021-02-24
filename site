@@ -1,5 +1,13 @@
 #!/bin/sh -e
 
+TMPF="$(mktemp)"
+
+bye() {
+	rm "$TMPF"
+}
+
+trap bye KILL EXIT TERM
+
 md() {
 	markdown -ffootnote
 }
@@ -59,12 +67,17 @@ modified() {
 	tar cz $(find -type f -name '*.htm') > site.tar.gz
 }
 
+pline=0
 build
 modified
 inotifywait -qmr . | while read line; do
+	[ "$pline" = "$line" ] && continue
+
 	event="$(echo "$line" | cut -d' ' -f2)"
 	file="$(echo "$line" | cut -d' ' -f3)"
 	ofile="$(outf "$file")"
+
+	pline="$line"
 
 	if [ "$file" = .css ]; then
 		case "$event" in
