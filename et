@@ -5,13 +5,14 @@ OUT="$2"
 [ "$OUT" ] || OUT="$(echo "$IN" | sed -E 's/\.(txt|md)$//').htm"
 
 md() {
-	markdown -ffootnote
+	markdown -ffootnote,autolink
 }
 
 htm() {
 	title="$(sed '1d;2s/^ *//;q' "$1")"
+	subtitle="$(sed '1,2d;3s/^ *//;q' "$1")"
 	date="$(sed '1s/^ *//;q' "$1")"
-	body="$(sed '1,2d;s/^         *\(.*\)$/## \1/;s/^	\(.*\)$/### \1/' "$1" | md\
+	body="$(sed '1,3d;s/^         *\(.*\)$/## \1/;s/^	\(.*\)$/### \1/' "$1" | md\
 		| sed 's/^/				/')"
 
 	cat << EOF
@@ -30,6 +31,7 @@ htm() {
 				<header>
 					<p class="date">$date</p>
 					<h1 class="title">$title</h1>
+$(if [ "$subtitle" ]; then echo "\t\t\t\t\t<p class=\"subtitle\">$subtitle</p>"; fi)
 				</header>
 
 $body
@@ -59,7 +61,7 @@ while true; do
 				nohup surf "file://$(realpath "$OUT")" &
 			fi
 		fi
-		inotifywait -qqe modify "$IN"
+		inotifywait -qqe modify "$IN" "$HOME/.css"
 	fi
 done > /dev/null 2> /dev/null &
 
