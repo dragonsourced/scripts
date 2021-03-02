@@ -12,15 +12,12 @@ md() {
 	markdown -ffootnote
 }
 
-outf() {
-	echo "$*" | sed -Ee 's/\.(txt|md)$//' -e 's/$/.htm/'
-}
-
 htm() {
 	title="$(sed '1d;2s/^ *//;q' "$1")"
+	subtitle="$(sed '1,2d;3s/^ *//;q' "$1")"
 	date="$(sed '1s/^ *//;q' "$1")"
-	body="$(sed '1,2d;s/^         *\(.*\)$/## \1/;s/^	\(.*\)$/### \1/' "$1" | md\
-		| sed 's/^/				/')"
+	body="$(sed -e '1,3d;s/^         *\(.*\)$/## \1/'\
+		-e 's/^(\([^()]*\)):$/<p class="section">\1<\/p>/' "$1" | md)"
 
 	cat << EOF
 <!DOCTYPE html>
@@ -29,7 +26,7 @@ htm() {
 	<head>
 		<title>$title</title>
 		<meta charset="UTF-8" />
-		<style>$(min < ".css")</style>
+		<style>$(min < "$HOME/.css")</style>
 	</head>
 
 	<body>
@@ -38,6 +35,7 @@ htm() {
 				<header>
 					<p class="date">$date</p>
 					<h1 class="title">$title</h1>
+$(if [ "$subtitle" ]; then echo "\t\t\t\t\t<p class=\"subtitle\">$subtitle</p>"; fi)
 				</header>
 
 $body
@@ -46,6 +44,10 @@ $body
 	</body>
 </html>
 EOF
+}
+
+outf() {
+	echo "$*" | sed -Ee 's/\.(txt|md)$//' -e 's/$/.htm/'
 }
 
 build() {
@@ -81,7 +83,7 @@ inotifywait -qmr . | while read line; do
 
 	pline="$line"
 
-	if [ "$file" = .css ]; then
+	if [ "$file" = "$HOME/.css" ]; then
 		case "$event" in
 			MODIFY|MOVED_TO|CREATE)
 				rebuild
