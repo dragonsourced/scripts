@@ -78,7 +78,8 @@ inotifywait -qmr . | while read line; do
 	[ "$pline" = "$line" ] && continue
 
 	event="$(echo "$line" | cut -d' ' -f2)"
-	file="$(echo "$line" | cut -d' ' -f3)"
+	dir="$(echo "$line" | cut -d' ' -f1)"
+	file="$dir$(echo "$line" | cut -d' ' -f3)"
 	ofile="$(outf "$file")"
 
 	pline="$line"
