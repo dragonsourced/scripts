@@ -84,7 +84,7 @@ inotifywait -qmr . | while read line; do
 
 	pline="$line"
 
-	if [ "$file" = .css ]; then
+	if [ "$file" = "./.css" ]; then
 		case "$event" in
 			MODIFY|MOVED_TO|CREATE)
 				rebuild
