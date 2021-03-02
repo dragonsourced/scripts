@@ -33,7 +33,7 @@ htm() {
 		<main>
 			<article>
 				<header>
-					<p class="date">$date</p>
+$(if [ "$date" ]; then echo "\t\t\t\t\t<p class=\"date\">$date</p>"; fi)
 					<h1 class="title">$title</h1>
 $(if [ "$subtitle" ]; then echo "\t\t\t\t\t<p class=\"subtitle\">$subtitle</p>"; fi)
 				</header>
