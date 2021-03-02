@@ -47,7 +47,7 @@ EOF
 }
 
 outf() {
-	echo "$*" | sed -Ee 's/\.(txt|md)$//' -e 's/$/.htm/'
+	echo "$*" | sed -Ee 's/\.(txt|md)$//' -e 's/$/.html/'
 }
 
 build() {
@@ -66,8 +66,8 @@ rebuild() {
 }
 
 modified() {
-	if [ "$(find -type f -name '*.htm')" ]; then
-		tar cz $(find -type f -name '*.htm') > site.tar.gz
+	if [ "$(find -type f -name '*.html')" ]; then
+		tar cz $(find -type f -name '*.html') > site.tar.gz
 	fi
 }
 
@@ -85,7 +85,7 @@ inotifywait -qmr . | while read line; do
 				rebuild
 				modified ;;
 		esac
-	elif [ "$ofile" != "$file.htm" ] && [ "$ofile" != "$file" ]; then
+	elif [ "$ofile" != "$file.html" ] && [ "$ofile" != "$file" ]; then
 		case "$event" in
 			CLOSE_WRITE,CLOSE|MOVED_TO|CREATE)
 				echo "$file -> $ofile <- $line"
