@@ -33,7 +33,7 @@ _strip_new() {
 # Self-explanatory.
 
 _list_entries() {
-	__t="$(tempfile)"
+	__t="$(mktemp)"
 	__n="$(_new_in "$*")"
 	sfeed_fmt title < "$*" > "$__t"
 	if [ "$__n" -gt 0 ]; then
@@ -264,7 +264,7 @@ _list_opts() {
 # Select an option with which to operate upon said entry.
 
 _selopt() {
-	__tmp="$(tempfile)"
+	__tmp="$(mktemp)"
 
 	cat > "$__tmp"
 
