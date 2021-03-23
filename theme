@@ -12,12 +12,6 @@ _sedi() {
 	mv "$__f" "$2"
 }
 
-_statusbar() {
-	killall status
-	killall lemonbar
-	status "$THEME" &
-}
-
 _conky() {
 	( pgrep -x conky && killall conky ) > /dev/null 2> /dev/null
 	[ -f "$HOME/.config/conky/$THEME.conf" ] && conky -dc "$HOME/.config/conky/$THEME.conf"
@@ -107,7 +101,6 @@ _set() {
 	_spotify &
 	_gtk
 	_wallpaper
-	_statusbar
 	_conky
 }
 
