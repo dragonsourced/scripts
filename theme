@@ -32,11 +32,38 @@ _xresources() {
 	xrdb -merge ~/.Xresources
 }
 
+_suckless() {
+	cat | tr '\t\n' ' ' << EOF
+
+		-D_DEFAULT_SOURCE
+		-D_BSD_SOURCE
+		-D_POSIX_C_SOURCE=200809L
+		-DVERSION=\"${VERSION}\"
+		\${XINERAMAFLAGS}
+
+		-DNORM_FG='"#$($0 g fg)"'
+		-DNORM_BG='"#$($0 g bg)"'
+		-DSEL_FG='"#$($0 g bg)"'
+		-DSEL_BG='"#$($0 g fg)"'
+		-DFONT='"$($0 g font | sed -E 's/ ([0-9]+)$/:size=\1/')"'
+		-DVERSION='"$($0)"'
+
+EOF
+}
+
 _dmenu() {
 	(
 		cd "$HOME/src/ui/dmenu" || return
 		make clean
-		make PREFIX="$HOME" THEME="-DTHEME='\"$THEME\"' -DFONT='\"$($0 g barfont)\"' -DFGCOLOR='\"#$FG\"' -DBGCOLOR='\"#$BG\"'" install
+		make PREFIX="$HOME" CPPFLAGS="$(_suckless)" install
+	)
+}
+
+_dwm() {
+	(
+		cd "$HOME/src/ui/dwm" || return
+		make clean
+		make PREFIX="$HOME" CPPFLAGS="$(_suckless)" install
 	)
 }
 
@@ -102,6 +129,7 @@ _set() {
 	_gtk
 	_wallpaper
 	_conky
+	_dwm
 }
 
 _list() {
