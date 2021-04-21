@@ -113,6 +113,34 @@ _gtk() {
 	xsettingsd &
 }
 
+_sway_set() {
+	_sedi "s|$1 .*\$|$1 \"$2\"|" ~/.config/sway/theme
+}
+
+_sway() {
+	_sway_set norm_bg "$BG"
+	_sway_set norm_fg "$FG"
+	_sway_set sel_bg  "$FG"
+	_sway_set sel_fg  "$BG"
+	_sway_set bar_bg  "$($0 g barbg)"
+	_sway_set bar_opacity "$($0 g opacity)"
+
+	if [ -f "$($0 g wall)" ]; then
+		_sway_set wall "$($0 g wall)"
+		_sway_set wall_mode fill
+	else
+		_sway_set wall "#$($0 g wall)"
+		_sway_set wall_mode solid_color
+	fi
+
+	swaymsg reload
+}
+
+_foot() {
+	_sedi "s/background=.*$/background=$BG/" ~/.config/foot/foot.ini
+	_sedi "s/foreground=.*$/foreground=$FG/" ~/.config/foot/foot.ini
+}
+
 _set() {
 	export THEME="$*"
 	echo "$THEME" > "$THEMEFILE"
@@ -126,8 +154,10 @@ _set() {
 	_cwm &
 	_notify &
 	_spotify &
-	_gtk
+	_sway &
+	_foot &
 	_wallpaper
+	_gtk
 	_conky
 	_dwm
 }
