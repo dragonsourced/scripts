@@ -3,7 +3,8 @@
 layout=$(setxkbmap -query | grep layout | awk '{ print $2 }')
 
 setlayout() {
-	setxkbmap -layout "$@"
+	setxkbmap -layout "$*"
+	pgrep -x sway && swaymsg input '*' xkb_layout "$*"
 }
 
 n_us() { setlayout ca; }
