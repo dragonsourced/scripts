@@ -122,8 +122,11 @@ _sway() {
 	_sway_set norm_fg "$FG"
 	_sway_set sel_bg  "$FG"
 	_sway_set sel_fg  "$BG"
+	_sway_set font "$($0 g font)"
 	_sway_set bar_bg  "$($0 g barbg)"
 	_sway_set bar_opacity "$($0 g opacity)"
+	_sway_set border_width "$($0 g borderwidth)"
+	_sway_set gap_width "$($0 g gaps)"
 
 	if [ -f "$($0 g wall)" ]; then
 		_sway_set wall "$($0 g wall)"
@@ -139,6 +142,7 @@ _sway() {
 _foot() {
 	_sedi "s/background=.*$/background=$BG/" ~/.config/foot/foot.ini
 	_sedi "s/foreground=.*$/foreground=$FG/" ~/.config/foot/foot.ini
+	_sedi "s/font=.*/font=$($0 g termfont)/" ~/.config/foot/foot.ini
 }
 
 _set() {
@@ -151,15 +155,20 @@ _set() {
 	_xresources &
 	_dmenu &
 	_rofi &
-	_cwm &
 	_notify &
-	_spotify &
 	_sway &
 	_foot &
-	_wallpaper
 	_gtk
-	_conky
-	_dwm
+
+	# I'm not currently using these, but I might need to again at
+	# some point in the future so I'm not going to remove them from
+	# the script entirely.
+	#
+	# _spotify &
+	# _cwm &
+	# _conky
+	# _wallpaper
+	# _dwm
 }
 
 _list() {
