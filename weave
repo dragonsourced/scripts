@@ -68,6 +68,11 @@ local function weave(f)
 				inlinecode = not inlinecode
 				if inlinecode then return "<code>"
 				else return "</code>" end
+			end):gsub("^#+ +.*$", function(x)
+				local lvl = 0
+				x:gsub("#", function() lvl = lvl + 1 end)
+				x = x:gsub("^#+ +", "")
+				return ("<h%d>%s</h%d>"):format(lvl, x, lvl)
 			end)
 			return r
 		end):gsub("^(.*[^ ]+) *:=$", "\n%1:"
