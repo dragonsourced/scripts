@@ -45,7 +45,7 @@ local function parse(file, filename)
 end
 
 local function expand(sec)
-	local ret = ""
+	local ret = fmt.section(sec) .. fmt.crlf
 
 	if not sections[sec] then
 		error(sec .. ": Section not found.")
