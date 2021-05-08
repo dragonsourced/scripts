@@ -9,16 +9,29 @@ if not ok then cfg = {
 		secexp = "{([A-Za-z ]+)}",
 		section = ffn "{%s}",
 		lineno  = ffn "{%s:%d}",
+		keyword = "[{}A-Za-z]+",
 		crlf = '\n',
 	},
 
 	keywords = {
 		"program", "unit", "uses",
+
 		"interface", "implementation", "initialization", "finalization",
-		"type", "var",
-		"const", "begin", "end",
+
+		"type", "var", "const",
+
+		"procedure", "function",
+		"begin", "end",
 		"while", "for", "do",
-		"to", "in"
+		"to", "in",
+
+		"array", "of", "record",
+		"ShortInt", "LongInt", "Integer",
+		"Word", "Real", "Char", "Boolean",
+		"Byte", "Word",
+
+		"true", "false",
+
 	},
 
 	casesensitive = false
@@ -62,7 +75,7 @@ local function weave(f)
 			local r = ""
 			if not codeblock then r = "<pre>" end
 			codeblock = true
-			r = r .. x:sub(2):gsub("%S+", function(x)
+			r = r .. x:sub(2):gsub(cfg.fmt.keyword, function(x)
 				if iskeyword(x) then return "<b>" .. x
 				.. "</b>" else return x end
 			end):gsub(cfg.fmt.secexp, "<i>%1</i>")
