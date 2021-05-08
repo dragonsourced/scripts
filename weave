@@ -32,10 +32,9 @@ local inlinecode = false
 local codeblock = false
 
 local function iskeyword(w)
-	if not cfg.casesensitive then
-		w = w:lower()
-	end
+	if not cfg.casesensitive then w = w:lower() end
 	for _,W in ipairs(cfg.keywords) do
+		if not cfg.casesensitive then W = W:lower() end
 		if w == W then return true end
 	end
 	return false
