@@ -1,11 +1,14 @@
 #!/usr/bin/env lua
 
-local sections = {Main = {}}
-local section = "Main"
+local sections = {MAIN = {}}
+local section = "MAIN"
 
 local ffn = function(s) return function(...) return s:format(...) end end
 
 local fmt = {
+	secset = "^([A-Za-z ]+) :=$",
+	secexp = "{([^{}]+)}",
+
 	section = ffn "{%s}",
 	lineno  = ffn "{%s:%d}",
 }
@@ -24,8 +27,10 @@ local function parse(file, filename)
 		if not line then break end
 
 		lno = lno + 1
-		if line:match("^%([^()]+%):$") then
-			section = line:sub(2, -3)
+
+		local m = line:match(fmt.secset)
+		if m then
+			section = m:upper()
 			sections[section] = sections[section] or {}
 		elseif line:sub(1,1) == "\t" then
 			table.insert(sections[section], {
@@ -48,10 +53,12 @@ local function expand(sec)
 		no = -1,
 	}
 	for _,line in ipairs(sections[sec]) do
-		if line.str:match("^\t+%([^()]+%)") then
-			local esec = line.str:gsub("^\t+%(", ""):sub(1,-2)
-			print(fmt.section(esec))
-			expand(esec)
+		local m = line.str:match(fmt.secexp)
+		if m then
+			local s, e = line.str:find(fmt.secexp)
+			print(line.str:sub(1,s-1));
+			expand(m:upper())
+			print(line.str:sub(e+1));
 		else
 			if line.file ~= prev.file or line.no ~= prev.no + 1 then
 				print(fmt.lineno(line.file, line.no))
@@ -76,4 +83,4 @@ else
 	parse(io.stdin, "stdin")
 end
 
-expand "Main"
+expand "MAIN"
