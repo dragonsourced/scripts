@@ -1,11 +1,65 @@
-#!/bin/sh
+#!/usr/bin/env lua
 
-#
-# Extract the code from a Markdown document.
-#
+local sections = {Main = {}}
+local section = "Main"
 
-if [ "$2" ]; then
-	sed 's/^[^\t].*$//' $1 > $2
+local function parse(file, filename)
+	local lno = 0
+	while true do
+		local line = file:read()
+		if not line then break end
+
+		lno = lno + 1
+		if line:match("^%([^()]+%):$") then
+			section = line:sub(2, -3)
+			sections[section] = sections[section] or {}
+		elseif line:sub(1,1) == "\t" then
+			table.insert(sections[section], {
+				file = filename,
+				str = line,
+				no = lno
+			})
+		end
+	end
+end
+
+local function expand(sec)
+	if not sections[sec] then
+		error(sec .. ": Section not found.")
+	end
+
+	local prev = {
+		file = "",
+		str = "",
+		no = -1,
+	}
+	for _,line in ipairs(sections[sec]) do
+		if line.str:match("^\t+%([^()]+%)") then
+			expand(line.str:gsub("^\t+%(", ""):sub(1,-2))
+		else
+			if line.file ~= prev.file or line.no ~= prev.no + 1 then
+				-- Uncomment this line if you want to
+				-- write C/C++ programs.
+				-- print(('#line %d "%s"'):format(line.no, line.file))
+			end
+			prev = line
+			print(line.str)
+		end
+	end
+end
+
+if #arg > 0 then
+	for _,filename in ipairs(arg) do
+		local file = io.open(filename)
+		if file then
+			parse(file, filename)
+			file:close()
+		else
+			error(filename .. ": Could not open file")
+		end
+	end
 else
-	sed 's/^[^\t].*$//' $1
-fi
+	parse(io.stdin, "stdin")
+end
+
+expand "Main"
