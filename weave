@@ -61,7 +61,7 @@ while ln do
 		local r = ""
 		if not codeblock then r = "<pre>" end
 		codeblock = true
-		r = r .. x:gsub("%S+", function(x)
+		r = r .. x:sub(2):gsub("%S+", function(x)
 			if iskeyword(x) then return "<b>" .. x
 			.. "</b>" else return x end
 		end):gsub(cfg.fmt.secexp, "<i>%1</i>")
