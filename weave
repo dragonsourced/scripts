@@ -24,6 +24,7 @@ if not ok then cfg = {
 	casesensitive = false
 } end
 
+
 local ln = io.read()
 
 local italic = false
@@ -31,13 +32,14 @@ local bold = false
 local inlinecode = false
 local codeblock = false
 
+for k, v in ipairs(cfg.keywords) do
+	if not cfg.casesensitive then v = v:lower() end
+	cfg.keywords[v] = k
+end
+
 local function iskeyword(w)
 	if not cfg.casesensitive then w = w:lower() end
-	for _,W in ipairs(cfg.keywords) do
-		if not cfg.casesensitive then W = W:lower() end
-		if w == W then return true end
-	end
-	return false
+	return cfg.keywords[w] ~= nil
 end
 
 while ln do
