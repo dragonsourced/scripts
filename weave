@@ -25,8 +25,6 @@ if not ok then cfg = {
 } end
 
 
-local ln = io.read()
-
 local italic = false
 local bold = false
 local inlinecode = false
@@ -42,39 +40,56 @@ local function iskeyword(w)
 	return cfg.keywords[w] ~= nil
 end
 
-while ln do
-	ln = ln:gsub("^[^\t].+$", function(x)
-		local r = ""
-		if codeblock then r = "</pre>" end
-		codeblock = false
-		r = r .. x:gsub("*", function()
-			italic = not italic
-			if italic then return "<i>"
-			else return "</i>" end
-		end):gsub("`", function()
-			inlinecode = not inlinecode
-			if inlinecode then return "<code>"
-			else return "</code>" end
-		end)
-		return r
-	end):gsub("^(.*[^ ]+) *:=$", "\n%1:"
-	):gsub("^\t.*$", function(x)
-		local r = ""
-		if not codeblock then r = "<pre>" end
-		codeblock = true
-		r = r .. x:sub(2):gsub("%S+", function(x)
-			if iskeyword(x) then return "<b>" .. x
-			.. "</b>" else return x end
-		end):gsub(cfg.fmt.secexp, "<i>%1</i>")
-		return r
-	end):gsub("^$", function()
-		if codeblock then
+local function weave(f)
+	local ln = f:read()
+	while ln do
+		ln = ln:gsub("^[^\t].+$", function(x)
+			local r = ""
+			if codeblock then r = "</pre>" end
 			codeblock = false
-			return "</pre>" .. cfg.fmt.crlf .. "<p>"
+			r = r .. x:gsub("*", function()
+				italic = not italic
+				if italic then return "<i>"
+				else return "</i>" end
+			end):gsub("`", function()
+				inlinecode = not inlinecode
+				if inlinecode then return "<code>"
+				else return "</code>" end
+			end)
+			return r
+		end):gsub("^(.*[^ ]+) *:=$", "\n%1:"
+		):gsub("^\t.*$", function(x)
+			local r = ""
+			if not codeblock then r = "<pre>" end
+			codeblock = true
+			r = r .. x:sub(2):gsub("%S+", function(x)
+				if iskeyword(x) then return "<b>" .. x
+				.. "</b>" else return x end
+			end):gsub(cfg.fmt.secexp, "<i>%1</i>")
+			return r
+		end):gsub("^$", function()
+			if codeblock then
+				codeblock = false
+				return "</pre>" .. cfg.fmt.crlf .. "<p>"
+			else
+				return cfg.fmt.crlf .. "<p>"
+			end
+		end)
+		print(ln)
+		ln = f:read()
+	end
+end
+
+if #arg > 0 then
+	for _,filename in ipairs(arg) do
+		local f = io.open(filename)
+		if f then
+			weave(f)
+			f:close()
 		else
-			return cfg.fmt.crlf .. "<p>"
+			error(filename .. ": Could not open file")
 		end
-	end)
-	print(ln)
-	ln = io.read()
+	end
+else
+	weave(io.stdin)
 end
