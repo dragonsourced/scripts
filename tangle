@@ -3,24 +3,18 @@
 local sections = {MAIN = {}}
 local section = "MAIN"
 
-local ffn = function(s) return function(...) return s:format(...) end end
+ffn = function(s) return function(...) return s:format(...) end end
 
-local fmt = {
-	secset = "^([A-Za-z ]+) :=$",
-	secexp = "{([A-Za-z ]+)}",
-
-	section = ffn "{%s}",
-	lineno  = ffn "{%s:%d}",
-
-	crlf = '\n',
-}
-
---[[
-	section = "/* %s */",
-	lineno  = function(f, l)
-		return ('#line %d "%s"'):format(l, f)
-	end
-]]
+local ok, cfg = pcall(require, "litcfg")
+if not ok then cfg = {
+	fmt = {
+		secset = "^([A-Za-z ]+) :=$",
+		secexp = "{([A-Za-z ]+)}",
+		section = ffn "{%s}",
+		lineno  = ffn "{%s:%d}",
+		crlf = '\n',
+	}
+} end
 
 local function parse(file, filename)
 	local lno = 0
@@ -30,7 +24,7 @@ local function parse(file, filename)
 
 		lno = lno + 1
 
-		local m = line:match(fmt.secset)
+		local m = line:match(cfg.fmt.secset)
 		if m then
 			section = m:upper()
 			sections[section] = sections[section] or {}
@@ -45,7 +39,7 @@ local function parse(file, filename)
 end
 
 local function expand(sec)
-	local ret = fmt.section(sec) .. fmt.crlf
+	local ret = cfg.fmt.section(sec) .. cfg.fmt.crlf
 
 	if not sections[sec] then
 		error(sec .. ": Section not found.")
@@ -58,18 +52,18 @@ local function expand(sec)
 	}
 
 	for _,line in ipairs(sections[sec]) do
-		local m = line.str:match(fmt.secexp)
+		local m = line.str:match(cfg.fmt.secexp)
 		if m then
-			ret = ret .. line.str:gsub(fmt.secexp,
+			ret = ret .. line.str:gsub(cfg.fmt.secexp,
 			function(x)
 				return expand(x:upper())
-			end) .. fmt.crlf
+			end) .. cfg.fmt.crlf
 		else
 			if line.file ~= prev.file or line.no ~= prev.no + 1 then
-				ret = ret .. fmt.lineno(line.file, line.no) .. fmt.crlf
+				ret = ret .. cfg.fmt.lineno(line.file, line.no) .. cfg.fmt.crlf
 			end
 			prev = line
-			ret = ret .. line.str .. fmt.crlf
+			ret = ret .. line.str .. cfg.fmt.crlf
 		end
 	end
 

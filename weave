@@ -1,14 +1,28 @@
 #!/usr/bin/env lua
 
-local ffn = function(s) return function(...) return s:format(...) end end
+ffn = function(s) return function(...) return s:format(...) end end
 
-local fmt = {
-	secset = "^([A-Za-z ]+) :=$",
-	secexp = "{([A-Za-z ]+)}",
-	section = ffn "{%s}",
-	lineno  = ffn "{%s:%d}",
-	crlf = '\n',
-}
+local ok, cfg = pcall(require, "litcfg")
+if not ok then cfg = {
+	fmt = {
+		secset = "^([A-Za-z ]+) :=$",
+		secexp = "{([A-Za-z ]+)}",
+		section = ffn "{%s}",
+		lineno  = ffn "{%s:%d}",
+		crlf = '\n',
+	},
+
+	keywords = {
+		"program", "unit", "uses",
+		"interface", "implementation", "initialization", "finalization",
+		"type", "var",
+		"const", "begin", "end",
+		"while", "for", "do",
+		"to", "in"
+	},
+
+	casesensitive = false
+} end
 
 local ln = io.read()
 
@@ -17,18 +31,11 @@ local bold = false
 local inlinecode = false
 local codeblock = false
 
-local keywords = {
-	"program", "unit", "uses",
-	"interface", "implementation", "initialization", "finalization",
-	"type", "var",
-	"const", "begin", "end",
-	"while", "for", "do",
-	"to", "in"
-}
-
 local function iskeyword(w)
-	w = w:lower()
-	for _,W in ipairs(keywords) do
+	if not cfg.casesensitive then
+		w = w:lower()
+	end
+	for _,W in ipairs(cfg.keywords) do
 		if w == W then return true end
 	end
 	return false
@@ -57,14 +64,14 @@ while ln do
 		r = r .. x:gsub("%S+", function(x)
 			if iskeyword(x) then return "<b>" .. x
 			.. "</b>" else return x end
-		end):gsub("{","<i>"):gsub("}","</i>")
+		end):gsub(cfg.fmt.secexp, "<i>%1</i>")
 		return r
 	end):gsub("^$", function()
 		if codeblock then
 			codeblock = false
-			return "</pre>\n<p>"
+			return "</pre>" .. cfg.fmt.crlf .. "<p>"
 		else
-			return "\n<p>"
+			return cfg.fmt.crlf .. "<p>"
 		end
 	end)
 	print(ln)
