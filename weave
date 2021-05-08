@@ -75,7 +75,7 @@ local function weave(f)
 				return ("<h%d>%s</h%d>"):format(lvl, x, lvl)
 			end)
 			return r
-		end):gsub("^(.*[^ ]+) *:=$", "\n%1:"
+		end):gsub("^(.*[^ ]+) *:=$", "\n<code><i>%1:</i></code>"
 		):gsub("^\t.*$", function(x)
 			local r = ""
 			if not codeblock then r = "<pre>" end
