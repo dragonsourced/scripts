@@ -72,7 +72,8 @@ local function weave(f)
 				local lvl = 0
 				x:gsub("#", function() lvl = lvl + 1 end)
 				x = x:gsub("^#+ +", "")
-				return ("<h%d>%s</h%d>"):format(lvl, x, lvl)
+				local id = x:lower():gsub(" ", "-")
+				return ("<h%d id=%q>%s</h%d>"):format(lvl, id, x, lvl)
 			end)
 			return r
 		end):gsub("^(.*[^ ]+) *:=$", "\n<code><i>%1:</i></code>"
