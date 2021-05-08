@@ -5,8 +5,8 @@ ffn = function(s) return function(...) return s:format(...) end end
 local ok, cfg = pcall(require, "litcfg")
 if not ok then cfg = {
 	fmt = {
-		secset = "^([A-Za-z ]+) :=$",
-		secexp = "{([A-Za-z ]+)}",
+		secset = "^([^{}]+) :=$",
+		secexp = "{([^{}]+)}",
 		section = ffn "{%s}",
 		lineno  = ffn "{%s:%d}",
 		keyword = "[{}A-Za-z]+",
