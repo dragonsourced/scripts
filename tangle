@@ -7,10 +7,12 @@ local ffn = function(s) return function(...) return s:format(...) end end
 
 local fmt = {
 	secset = "^([A-Za-z ]+) :=$",
-	secexp = "{([^{}]+)}",
+	secexp = "{([A-Za-z ]+)}",
 
 	section = ffn "{%s}",
 	lineno  = ffn "{%s:%d}",
+
+	crlf = '\n',
 }
 
 --[[
@@ -43,6 +45,8 @@ local function parse(file, filename)
 end
 
 local function expand(sec)
+	local ret = ""
+
 	if not sections[sec] then
 		error(sec .. ": Section not found.")
 	end
@@ -52,21 +56,24 @@ local function expand(sec)
 		str = "",
 		no = -1,
 	}
+
 	for _,line in ipairs(sections[sec]) do
 		local m = line.str:match(fmt.secexp)
 		if m then
-			local s, e = line.str:find(fmt.secexp)
-			print(line.str:sub(1,s-1));
-			expand(m:upper())
-			print(line.str:sub(e+1));
+			ret = ret .. line.str:gsub(fmt.secexp,
+			function(x)
+				return expand(x:upper())
+			end) .. fmt.crlf
 		else
 			if line.file ~= prev.file or line.no ~= prev.no + 1 then
-				print(fmt.lineno(line.file, line.no))
+				ret = ret .. fmt.lineno(line.file, line.no) .. fmt.crlf
 			end
 			prev = line
-			print(line.str)
+			ret = ret .. line.str .. fmt.crlf
 		end
 	end
+
+	return ret
 end
 
 if #arg > 0 then
@@ -83,4 +90,4 @@ else
 	parse(io.stdin, "stdin")
 end
 
-expand "MAIN"
+print(expand "MAIN")
