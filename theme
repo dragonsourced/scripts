@@ -45,7 +45,7 @@ _suckless() {
 		-DNORM_BG='"#$($0 g bg)"'
 		-DSEL_FG='"#$($0 g bg)"'
 		-DSEL_BG='"#$($0 g fg)"'
-		-DFONT='"$($0 g font | sed -E 's/ ([0-9]+)$/:size=\1/')"'
+		-DFONT='"$($0 g barfont | sed -E 's/ ([0-9]+)$/:size=\1/')"'
 		-DVERSION='"$($0)"'
 
 EOF
