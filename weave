@@ -76,15 +76,15 @@ local function weave(f)
 				return ("<h%d id=%q>%s</h%d>"):format(lvl, id, x, lvl)
 			end)
 			return r
-		end):gsub("^(.*[^ ]+) *:=$", "\n<code><i>%1:</i></code>"
+		end):gsub("^(.*[^ ]+) *:=$", "\n<span class='secdef'>%1:</span>"
 		):gsub("^\t.*$", function(x)
 			local r = ""
 			if not codeblock then r = "<pre>" end
 			codeblock = true
 			r = r .. x:sub(2):gsub(cfg.fmt.keyword, function(x)
-				if iskeyword(x) then return "<b>" .. x
-				.. "</b>" else return x end
-			end):gsub(cfg.fmt.secexp, "<i>%1</i>")
+				if iskeyword(x) then return "<span class='keyword'>" .. x
+				.. "</span>" else return x end
+			end):gsub(cfg.fmt.secexp, "<span class='sec'>%1</span>")
 			return r
 		end):gsub("^$", function()
 			if codeblock then
