@@ -1,8 +1,8 @@
 #!/usr/bin/env lua
 
-# Usage:
-# weave src.txt > out.md
-# pandoc --toc -N -Vlang=en --toc=depth=4 -s out.md -o out.html
+-- Usage:
+-- weave src.txt > out.md
+-- pandoc --toc -N -Vlang=en --toc=depth=4 -s out.md -o out.html
 
 ffn = function(s) return function(...) return s:format(...) end end
 
