@@ -60,7 +60,7 @@ end
 local function weave(f)
 	local ln = f:read()
 	while ln do
-		ln = ln:gsub("^[^\t].+$", function(x)
+		ln = ln:gsub(" < ", " &lt; "):gsub("<=", "&lt;="):gsub("^[^\t].+$", function(x)
 			local r = ""
 			if codeblock then r = "</pre>" end
 			codeblock = false
