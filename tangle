@@ -5,16 +5,7 @@ local section = "MAIN"
 
 ffn = function(s) return function(...) return s:format(...) end end
 
-local ok, cfg = pcall(require, "litcfg")
-if not ok then cfg = {
-	fmt = {
-		secset = "^([^{}]+) :=$",
-		secexp = "{([^{}]+)}",
-		section = ffn "{%s}",
-		lineno  = ffn "{%s:%d}",
-		crlf = '\n',
-	}
-} end
+local cfg = require "litcfg"
 
 local function parse(file, filename)
 	local lno = 0
