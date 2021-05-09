@@ -19,22 +19,40 @@ local function iskeyword(w)
 	return cfg.keywords[w] ~= nil
 end
 
-local function mkid(x)
-	return x:lower()
-	:gsub("<span[^>]*>", "")
-	:gsub("</span>", "")
-	:gsub("<", "lt")
-	:gsub(">", "gt")
-	:gsub(" ", "-")
-	:gsub("[,.!]", "")
-	:gsub("-+", "-")
+local sec = {
+	0, -- Section
+	0, -- Subsection
+	0, -- Subsubsection
+}
+
+local function secadd(lvl)
+	for i = lvl + 1, #sec do
+		sec[i] = 0
+	end
+	sec[lvl] = sec[lvl] + 1
+end
+
+local function secid()
+	return table.concat(sec, "-")
 end
 
 local function htmlesc(s)
 	return s
+	:gsub("<span[^>]*>(.*)</span>", "%1")
 	:gsub("&", "&amp;")
 	:gsub("<", "&lt;")
 	:gsub(">", "&gt;")
+end
+
+local function mkid(x)
+	return htmlesc(x):lower()
+	:gsub("[&;]", "")
+	:gsub("<span[^>]*>", "")
+	:gsub("</span>", "")
+	:gsub(" ", "-")
+	:gsub("[,.!]", "")
+	:gsub("-+", "-")
+	.. "-" .. secid()
 end
 
 local function weave(f)
@@ -42,8 +60,14 @@ local function weave(f)
 	while ln do
 		ln = ln
 		:gsub("^[^\t].*$", function(x)
-			return x:gsub(cfg.fmt.secset, function(x)
-				return ("[%s]{#%s .secset}"):format(x, mkid(x))
+			return x
+			:gsub("^#.*$", function(x)
+				local lvl = 0
+				x:gsub("#", function() lvl = lvl + 1 end)
+				secadd(lvl)
+				return x
+			end):gsub(cfg.fmt.secset, function(x)
+				return (("#"):rep(#sec+1) .. " %s {#%s .secset}"):format(x, mkid(x))
 			end)
 		end):gsub("^\t.*$", function(x)
 			return htmlesc(x)
@@ -84,7 +108,6 @@ end
 print [[
 
 <style>
-	.secset { font-style: italic; font-weight: bold; }
 	.sec { font-family: serif; }
 	:not(.sec) > .keyword { font-weight: bold; }
 </style>
