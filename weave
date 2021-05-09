@@ -53,6 +53,10 @@ local function iskeyword(w)
 	return cfg.keywords[w] ~= nil
 end
 
+local function mkid(x)
+	return x:lower():gsub("<", "lt"):gsub(">", "gt"):gsub("<span[^>]*>", ""):gsub("</span>", ""):gsub(" ", "-")
+end
+
 local function weave(f)
 	local ln = f:read()
 	while ln do
@@ -72,19 +76,24 @@ local function weave(f)
 				local lvl = 0
 				x:gsub("#", function() lvl = lvl + 1 end)
 				x = x:gsub("^#+ +", "")
-				local id = x:lower():gsub(" ", "-")
+				local id = mkid(x)
 				return ("<h%d id=%q>%s</h%d>"):format(lvl, id, x, lvl)
 			end)
 			return r
-		end):gsub("^(.*[^ ]+) *:=$", "\n<span class='secdef'>%1:</span>"
-		):gsub("^\t.*$", function(x)
+		end):gsub(cfg.fmt.secset, function(x)
+			local id = mkid(x)
+			return ("<p class=secdef id=%s>%s</p>"):format(id, x)
+		end):gsub("^\t.*$", function(x)
 			local r = ""
 			if not codeblock then r = "<pre>" end
 			codeblock = true
 			r = r .. x:sub(2):gsub(cfg.fmt.keyword, function(x)
-				if iskeyword(x) then return "<span class='keyword'>" .. x
+				if iskeyword(x) then return "<span class=keyword>" .. x
 				.. "</span>" else return x end
-			end):gsub(cfg.fmt.secexp, "<span class='sec'>%1</span>")
+			end):gsub(cfg.fmt.secexp, function(x)
+				local id = mkid(x)
+				return ("<a class=sec href=#%s>%s</a>"):format(id, x)
+			end)
 			return r
 		end):gsub("^$", function()
 			if codeblock then
