@@ -54,7 +54,7 @@ local function iskeyword(w)
 end
 
 local function mkid(x)
-	return x:lower():gsub("<", "lt"):gsub(">", "gt"):gsub("<span[^>]*>", ""):gsub("</span>", ""):gsub(" ", "-")
+	return x:lower():gsub("<span[^>]*>", ""):gsub("</span>", ""):gsub("<", "lt"):gsub(">", "gt"):gsub(" ", "-")
 end
 
 local function weave(f)
