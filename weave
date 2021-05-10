@@ -38,7 +38,13 @@ local function sechdr()
 end
 
 local function secid()
-	return table.concat(sec, "-")
+	local r = sec[1]
+	local i = 2
+	while sec[i] ~= nil and sec[i] ~= 0 do
+		r = r .. "-" .. sec[i]
+		i = i + 1
+	end
+	return r
 end
 
 local function htmlesc(s)
