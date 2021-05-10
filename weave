@@ -2,7 +2,7 @@
 
 -- Usage:
 -- weave src.txt > out.md
--- pandoc --toc -N -Vlang=en --toc=depth=4 -s out.md -o out.html
+-- pandoc --toc -N -Vlang=en --toc=depth 6 -s out.md -o out.html
 
 ffn = function(s) return function(...) return s:format(...) end end
 
@@ -18,17 +18,23 @@ local function iskeyword(w)
 	return cfg.keywords[w] ~= nil
 end
 
-local sec = {
-	0, -- Section
-	0, -- Subsection
-	0, -- Subsubsection
-}
+local sec = { 0, 0, 0, 0, 0, 0 }
 
 local function secadd(lvl)
 	for i = lvl + 1, #sec do
 		sec[i] = 0
 	end
 	sec[lvl] = sec[lvl] + 1
+end
+
+local function sechdr()
+	local r = "#"
+	local i = 1
+	while sec[i] ~= nil and sec[i] ~= 0 do
+		r = r .. "#"
+		i = i + 1
+	end
+	return r
 end
 
 local function secid()
@@ -69,7 +75,7 @@ local function weave(f)
 				secadd(lvl)
 				return x
 			end):gsub(cfg.fmt.secset, function(x)
-				return (("#"):rep(#sec+1) .. " %s {#%s .secset}"):format(x, mkid(htmlesc(x)))
+				return (sechdr() .. " %s {#%s .secset}"):format(x, mkid(htmlesc(x)))
 			end)
 		end):gsub("^\t.*$", function(x)
 			code = true
