@@ -92,6 +92,10 @@ local function weave(f)
 		print(ln)
 		ln = f:read()
 	end
+
+	-- Needed in order to properly handle the concatenation of files
+	-- which start with a heading.
+	print ""
 end
 
 if #arg > 0 then
