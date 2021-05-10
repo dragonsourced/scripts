@@ -57,9 +57,9 @@ end
 
 local function mkid(x)
 	return x:lower()
-	:gsub("%p", "")
 	:gsub("<span[^>]*>", "")
 	:gsub("</span>", "")
+	:gsub("%p", "")
 	:gsub(" ", "-")
 	:gsub("[,.!]", "")
 	:gsub("-+", "-")
