@@ -3,9 +3,13 @@
 local sections = {MAIN = {}}
 local section = "MAIN"
 
-ffn = function(s) return function(...) return s:format(...) end end
-
 local cfg = require "litcfg"
+local fmtsec = cfg.fmt.section
+local fmtlin = cfg.fmt.lineno
+cfg.fmt.section = function(s) return fmtsec:gsub("%%s", s) end
+cfg.fmt.lineno = function(f, l)
+	return fmtsec:gsub("%%l", l):gsub("%%f", f)
+end
 
 local function parse(file, filename)
 	local lno = 0

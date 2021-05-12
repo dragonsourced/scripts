@@ -4,8 +4,6 @@
 -- weave src.txt > out.md
 -- pandoc --toc -N -Vlang=en --toc=depth 6 -s out.md -o out.html
 
-ffn = function(s) return function(...) return s:format(...) end end
-
 local cfg = require "litcfg"
 
 for k, v in ipairs(cfg.keywords) do
