@@ -127,8 +127,9 @@ end
 print [[
 
 <style>
-	.sec { font-family: serif; }
-	:not(.sec) > .keyword { font-weight: bold; }
-	pre { margin: 0; }
+.sec { font-family: serif; }
+:not(.sec) > .keyword { font-weight: bold; }
+pre { margin-bottom: 0; }
+pre + pre { margin-top: 0; }
 </style>
 ]]
