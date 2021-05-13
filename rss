@@ -302,8 +302,9 @@ while true; do
 	"$OPT_TTL")
 		sfeed_fmt title < "$__tmp" | LESSHISTFILE=/dev/null "${PAGER:-less}" ;;
 	"$OPT_VID")
-		vid "$__media" > /dev/null 2> /dev/null ;;
+		nohup vid "$__media" > /dev/null ;;
 	"$OPT_AUD")
+		clear
 		mpv --no-video "$__media" ;;
 	"$OPT_CPY")
 		echo "$__link" | xsel -b ;;
