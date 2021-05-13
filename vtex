@@ -18,7 +18,7 @@ cleanup() {
 
 rebuild() {
 	echo 'SIGHUP received.  Rebuilding...'
-	pdftex -halt-on-error "$(basename "$FILE")"
+	pdftex -halt-on-error -output-directory "${DIR}" "$FILE"
 	kill -HUP "$PDFPID"
 }
 
@@ -26,11 +26,9 @@ trap rebuild HUP
 trap goodbye INT TERM
 trap cleanup EXIT
 
-ln -v "$FILE" "${DIR}"
-cd "${DIR}" || exit
-pdftex -halt-on-error "$(basename "$FILE")"
+pdftex -halt-on-error -output-directory "${DIR}" "$FILE"
 
-mupdf *.pdf &
+mupdf "${DIR}"/*.pdf &
 PDFPID=$!
 
 while kill -0 $PDFPID; do
