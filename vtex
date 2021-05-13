@@ -1,42 +1,38 @@
 #!/bin/sh
 
 DIR="$(mktemp -d)"
-echo "created directory '$DIR'"
+echo "created directory '${DIR}'"
 
-PID1=0
-PID2=0
+FILE="$1"
 
-cleanup() {
-	rm -rfv "${DIR}"
-	kill "$PID1"
-	kill "$PID2"
+PDFPID=0
+
+goodbye() {
+	kill $PDFPID
 }
 
-build() {
-	for f in "$@"; do
-		pdftex -halt-on-error "$f"
-	done
+cleanup() {
+	echo 'EXIT received.  Cleaning up...'
+	rm -rv "${DIR}"
 }
 
 rebuild() {
-	build "$@"
+	echo 'SIGHUP received.  Rebuilding...'
+	pdftex -halt-on-error "$(basename "$FILE")"
+	kill -HUP "$PDFPID"
 }
 
-update() {
-	inotifywait -qme CLOSE_WRITE "$@" | while read _; do
-		rebuild "$@"
-		pkill -SIGHUP mupdf
-	done &
-	PID1=$!
-}
-
+trap rebuild HUP
+trap goodbye INT TERM
 trap cleanup EXIT
 
-ln -v "$1" "${DIR}"
+ln -v "$FILE" "${DIR}"
 cd "${DIR}" || exit
+pdftex -halt-on-error "$(basename "$FILE")"
 
-FILE="$(basename "$1")"
-build "${FILE}"
-update "${FILE}" &
-PID2=$!
-mupdf *.pdf
+mupdf *.pdf &
+PDFPID=$!
+
+while kill -0 $PDFPID; do
+	wait
+done
