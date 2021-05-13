@@ -1,0 +1,42 @@
+#!/bin/sh
+
+DIR="$(mktemp -d)"
+echo "created directory '$DIR'"
+
+PID1=0
+PID2=0
+
+cleanup() {
+	rm -rfv "${DIR}"
+	kill "$PID1"
+	kill "$PID2"
+}
+
+build() {
+	for f in "$@"; do
+		pdftex -halt-on-error "$f"
+	done
+}
+
+rebuild() {
+	build "$@"
+}
+
+update() {
+	inotifywait -qme CLOSE_WRITE "$@" | while read _; do
+		rebuild "$@"
+		pkill -SIGHUP mupdf
+	done &
+	PID1=$!
+}
+
+trap cleanup EXIT
+
+ln -v "$1" "${DIR}"
+cd "${DIR}" || exit
+
+FILE="$(basename "$1")"
+build "${FILE}"
+update "${FILE}" &
+PID2=$!
+mupdf *.pdf

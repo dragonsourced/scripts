@@ -1,0 +1,5 @@
+#!/bin/sh
+
+[ -f "$1" ] || echo '\\bye' > "$1"
+vtex "$1" > /dev/null 2> /dev/null &
+nvi "$1"
