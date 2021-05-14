@@ -16,9 +16,20 @@ cleanup() {
 	rm -rv "${DIR}"
 }
 
+build() {
+	if echo "$FILE" | grep -q '\.md$'; then
+		f="$(echo "$FILE" | sed 's/\.md$/.tex/')"
+		m2t "$FILE" -o "$f"
+		pdftex -halt-on-error -output-directory "${DIR}" "$f"
+		rm -v "$f"
+	else
+		pdftex -halt-on-error -output-directory "${DIR}" "$FILE"
+	fi
+}
+
 rebuild() {
 	echo 'SIGHUP received.  Rebuilding...'
-	pdftex -halt-on-error -output-directory "${DIR}" "$FILE"
+	build
 	kill -HUP "$PDFPID"
 }
 
@@ -26,7 +37,7 @@ trap rebuild HUP
 trap goodbye INT TERM
 trap cleanup EXIT
 
-pdftex -halt-on-error -output-directory "${DIR}" "$FILE"
+build
 
 mupdf "${DIR}"/*.pdf &
 PDFPID=$!
