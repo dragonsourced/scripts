@@ -4,7 +4,7 @@ www() {
 	if [ "$BROWSER" ]; then
 		"$BROWSER" "$1"
 	elif [ "$DISPLAY" ]; then
-		surf -F "$1"
+		surf "$1"
 	else
 		lynx -nopause "$1"
 	fi
