@@ -37,7 +37,7 @@ while [ "$1" ]; do
 
 			*.sh) _sh "$1" ;;
 			*.tex)
-				sed -e 's/\\[a-zA-Z0-9]*//g' "$1" > /tmp/spell
+				sed -E 's/^\\input.*$//g;s/\\[a-zA-Z]+//g' "$1" > /tmp/spell
 				spell -d $HOME/.spell -n /tmp/spell
 				rm /tmp/spell ;;
 			*.md|*.txt) spell "$1" ;;
