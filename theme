@@ -120,9 +120,10 @@ _sway_set() {
 _sway() {
 	_sway_set norm_bg "$BG"
 	_sway_set norm_fg "$FG"
-	_sway_set sel_bg  "$FG"
-	_sway_set sel_fg  "$BG"
+	_sway_set sel_bg  "$($0 g barfg)"
+	_sway_set sel_fg  "$($0 g barbg)"
 	_sway_set font "$($0 g font)"
+	_sway_set bar_fg  "$($0 g barfg)"
 	_sway_set bar_bg  "$($0 g barbg)"
 	_sway_set bar_opacity "$($0 g opacity)"
 	_sway_set border_width "$($0 g borderwidth)"
