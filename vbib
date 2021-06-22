@@ -1,0 +1,38 @@
+#!/bin/sh
+
+dir="$(mktemp -d)"
+fil="$(mktemp)"
+pdf="$dir/$(basename "$fil").pdf"
+mv "$fil" "$fil.tex"
+fil="$fil.tex"
+
+bib "${HOME}/docs/bib/biblio" "${HOME}/docs/bib/style" "$1" > "$fil"
+
+build() {
+	pdftex -output-directory "$dir" "$fil"
+}
+
+build
+mupdf "$pdf" &
+pdfpid="$!"
+
+rebuild() {
+	build
+	kill -SIGHUP "$pdfpid"
+}
+
+goodbye() {
+	kill "$pdfpid"
+}
+
+cleanup() {
+	rm -rv "$dir" "$fil"
+}
+
+trap rebuild HUP
+trap goodbye INT TERM
+trap cleanup EXIT
+
+while kill -0 "$pdfpid"; do
+	wait
+done
