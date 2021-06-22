@@ -1,6 +1,6 @@
 #!/bin/sh
 
-vtex "$1" > /dev/null 2> /dev/null &
+vbib "$1" > /dev/null 2> /dev/null &
 vpid=$!
 
 updpid=0
