@@ -1,0 +1,47 @@
+#!/bin/sh
+
+DIR="$(mktemp -d)"
+echo "created directory '${DIR}'"
+
+FILE="$1"
+
+PDFPID=0
+
+goodbye() {
+	kill $PDFPID
+}
+
+cleanup() {
+	echo 'EXIT received.  Cleaning up...'
+	rm -rv "${DIR}"
+}
+
+build() {
+	if echo "$FILE" | grep -q '\.md$'; then
+		f="$(echo "$FILE" | sed 's/\.md$/.tex/')"
+		m2t "$FILE" -o "$f"
+		pdflatex -halt-on-error -output-directory "${DIR}" "$f"
+		rm -v "$f"
+	else
+		pdflatex -halt-on-error -output-directory "${DIR}" "$FILE"
+	fi
+}
+
+rebuild() {
+	echo 'SIGHUP received.  Rebuilding...'
+	build
+	kill -HUP "$PDFPID"
+}
+
+trap rebuild HUP
+trap goodbye INT TERM
+trap cleanup EXIT
+
+build
+
+mupdf "${DIR}"/*.pdf &
+PDFPID=$!
+
+while kill -0 $PDFPID; do
+	wait
+done
