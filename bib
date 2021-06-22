@@ -1,0 +1,98 @@
+#!/usr/bin/env lua
+
+local bib = {
+	["nil"] = {
+		author = "Nobody",
+		year   = "never"
+	}
+}
+local cited = {}
+local alreadycited = {}
+local style
+
+function firstname(x) return x:match("^[^ ]+") end
+function middlename(x) return x:gsub("^[^ ]+ ", ""):gsub(" [^ ]+$", "") end
+function nolastname(x) return x:gsub(" [^ ]+$", "") end
+function lastname(x) return x:match("[^ ]+$") end
+
+local function buildstyle(f)
+	style = loadstring("return " .. f:read("*a"))()
+end
+
+local function buildbib(f)
+	local ln = f:read()
+	local cur = "nil"
+	while ln do
+		if ln:match("^\t") then
+			local key = ln:match("^\t([^\t]+)")
+			local val = ln:match("^\t.*\t(.+)$")
+			bib[cur][key] = val
+		elseif ln ~= "" then
+			cur = ln
+			bib[cur] = bib[cur] or {}
+		end
+		ln = f:read()
+	end
+end
+
+local function nocite(x)
+	if not alreadycited[x] then
+		table.insert(cited, bib[x])
+		alreadycited[x] = true
+	end
+	return ""
+end
+
+local function cite(x)
+	nocite(x)
+	return style.cite(bib[x])
+end
+
+local function biblio()
+	return style.cited(cited)
+end
+
+local function doit(inputf, bibf, stylef)
+	buildbib(bibf)
+	buildstyle(stylef)
+	local s =
+		inputf
+		:read("*a")
+		:gsub([[\cite{([^}]*)}]],   cite)
+		:gsub([[\nocite{([^}]*)}]], nocite)
+		:gsub([[\cited]], biblio)
+	io.write(s)
+end
+
+if (#arg ~= 2) and (#arg ~= 3) then
+	print("Usage: arg BIBLIOGRAPHY STYLE [INPUT]")
+else
+	local bibf = io.open(arg[1], "r")
+	if not bibf then
+		error(arg[1] .. ": No such file or directory")
+		os.exit(1)
+	end
+
+	local stylef = io.open(arg[2], "r")
+	if not stylef then
+		error(arg[1] .. ": No such file or directory")
+		os.exit(1)
+	end
+
+	local f = io.stdin
+	if arg[3] then
+		f = io.open(arg[3], "r")
+		if not f then
+			stylef:close()
+			bibf:close()
+			error(arg[3] .. ": No such file or directory")
+			os.exit(1)
+		end
+	end
+
+	doit(f, bibf, stylef)
+
+	f:close()
+	stylef:close()
+	bibf:close()
+end
