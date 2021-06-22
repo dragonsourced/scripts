@@ -1,24 +1,21 @@
 #!/bin/sh
 
+src="$1"
 dir="$(mktemp -d)"
 fil="$(mktemp)"
 pdf="$dir/$(basename "$fil").pdf"
 mv "$fil" "$fil.tex"
 fil="$fil.tex"
-
-bib "${HOME}/docs/bib/biblio" "${HOME}/docs/bib/style" "$1" > "$fil"
+pdfpid=0
 
 build() {
+	bib "${HOME}/docs/bib/biblio" "${HOME}/docs/bib/style" "$src" > "$fil"
 	pdftex -output-directory "$dir" "$fil"
 }
 
-build
-mupdf "$pdf" &
-pdfpid="$!"
-
 rebuild() {
 	build
-	kill -SIGHUP "$pdfpid"
+	kill -HUP "$pdfpid"
 }
 
 goodbye() {
@@ -32,6 +29,10 @@ cleanup() {
 trap rebuild HUP
 trap goodbye INT TERM
 trap cleanup EXIT
+
+build
+mupdf "$pdf" &
+pdfpid="$!"
 
 while kill -0 "$pdfpid"; do
 	wait
